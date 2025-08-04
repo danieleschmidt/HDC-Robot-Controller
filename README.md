@@ -648,7 +648,7 @@ while True:
 ```bibtex
 @article{hdc_robotics2025,
   title={Hyperdimensional Computing for Robust Robotic Control},
-  author={Your Name et al.},
+  author={Daniel Schmidt},
   journal={Science Robotics},
   year={2025},
   doi={10.1126/scirobotics.xxxxx}
@@ -656,7 +656,7 @@ while True:
 
 @inproceedings{one_shot_robot_learning2024,
   title={One-Shot Robot Learning with Hyperdimensional Computing},
-  author={Your Team},
+  author={Daniel Schmidt},
   booktitle={RSS},
   year={2024}
 }

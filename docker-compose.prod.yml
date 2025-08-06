@@ -1,0 +1,233 @@
+version: '3.8'
+
+services:
+  # HDC Robot Controller - Main Service
+  hdc-controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: terragon/hdc-robot-controller:v3.0
+    container_name: hdc-robot-controller
+    restart: unless-stopped
+    ports:
+      - "8080:8080"      # HTTP API
+      - "11311:11311"    # ROS Master
+      - "7000:7000"      # Distributed Coordinator
+    environment:
+      - ROS_DOMAIN_ID=42
+      - HDC_DIMENSION=10000
+      - HDC_GPU_ENABLED=true
+      - HDC_SECURITY_LEVEL=HIGH
+      - REDIS_HOST=hdc-redis
+      - REDIS_PORT=6379
+      - HDC_LOG_LEVEL=INFO
+      - CUDA_VISIBLE_DEVICES=0
+    volumes:
+      - hdc_data:/data/hdc
+      - ros_logs:/var/log/ros
+      - ./config/production.yaml:/app/config/hdc_config.yaml:ro
+    networks:
+      - hdc-network
+    depends_on:
+      - hdc-redis
+      - prometheus
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Redis for Distributed Processing
+  hdc-redis:
+    image: redis:7-alpine
+    container_name: hdc-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - hdc-network
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # HDC Worker Nodes (Scalable)
+  hdc-worker-1:
+    image: terragon/hdc-robot-controller:v3.0
+    container_name: hdc-worker-1
+    restart: unless-stopped
+    environment:
+      - HDC_WORKER_MODE=true
+      - HDC_WORKER_ID=worker_1
+      - HDC_COORDINATOR_HOST=hdc-controller
+      - REDIS_HOST=hdc-redis
+      - HDC_GPU_ENABLED=true
+      - CUDA_VISIBLE_DEVICES=1
+    volumes:
+      - hdc_worker_data:/data/worker
+    networks:
+      - hdc-network
+    depends_on:
+      - hdc-controller
+      - hdc-redis
+    command: ["python3", "-m", "hdc_robot_controller.scaling.distributed_worker"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  hdc-worker-2:
+    image: terragon/hdc-robot-controller:v3.0
+    container_name: hdc-worker-2
+    restart: unless-stopped
+    environment:
+      - HDC_WORKER_MODE=true
+      - HDC_WORKER_ID=worker_2
+      - HDC_COORDINATOR_HOST=hdc-controller
+      - REDIS_HOST=hdc-redis
+      - HDC_GPU_ENABLED=false  # CPU-only worker
+    volumes:
+      - hdc_worker_data:/data/worker
+    networks:
+      - hdc-network
+    depends_on:
+      - hdc-controller
+      - hdc-redis
+    command: ["python3", "-m", "hdc_robot_controller.scaling.distributed_worker"]
+
+  # Monitoring and Observability
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: hdc-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - hdc-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: hdc-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana-dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./config/grafana-datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - hdc-network
+    depends_on:
+      - prometheus
+
+  # Log Aggregation
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: hdc-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - hdc-network
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.0
+    container_name: hdc-kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - hdc-network
+    depends_on:
+      - elasticsearch
+
+  # Reverse Proxy and Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: hdc-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - hdc-network
+    depends_on:
+      - hdc-controller
+
+  # Health Checker Service
+  healthcheck:
+    image: terragon/hdc-robot-controller:v3.0
+    container_name: hdc-healthcheck
+    restart: unless-stopped
+    environment:
+      - HDC_HEALTHCHECK_MODE=true
+      - CHECK_INTERVAL=30
+      - SERVICES_TO_CHECK=hdc-controller,hdc-redis,prometheus
+    networks:
+      - hdc-network
+    command: ["python3", "-m", "hdc_robot_controller.monitoring.healthcheck"]
+    depends_on:
+      - hdc-controller
+
+volumes:
+  hdc_data:
+    driver: local
+  hdc_worker_data:
+    driver: local
+  redis_data:
+    driver: local
+  ros_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+
+networks:
+  hdc-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

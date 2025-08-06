@@ -1,0 +1,258 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hdc-robot-controller
+  namespace: robotics
+  labels:
+    app: hdc-robot-controller
+    version: v3.0
+    component: control-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hdc-robot-controller
+  template:
+    metadata:
+      labels:
+        app: hdc-robot-controller
+        version: v3.0
+    spec:
+      containers:
+      - name: hdc-controller
+        image: terragon/hdc-robot-controller:v3.0
+        ports:
+        - containerPort: 8080
+          name: http-api
+        - containerPort: 11311
+          name: ros-master
+        env:
+        - name: ROS_DOMAIN_ID
+          value: "42"
+        - name: HDC_DIMENSION
+          value: "10000"
+        - name: HDC_GPU_ENABLED
+          value: "true"
+        - name: HDC_SECURITY_LEVEL
+          value: "STANDARD"
+        - name: REDIS_HOST
+          value: "hdc-redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+            nvidia.com/gpu: "1"
+        volumeMounts:
+        - name: hdc-data
+          mountPath: /data/hdc
+        - name: ros-logs
+          mountPath: /var/log/ros
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      - name: hdc-redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+      volumes:
+      - name: hdc-data
+        persistentVolumeClaim:
+          claimName: hdc-storage-pvc
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-storage-pvc
+      - name: ros-logs
+        emptyDir: {}
+      nodeSelector:
+        gpu: nvidia
+        robotics: enabled
+      tolerations:
+      - key: gpu
+        operator: Equal
+        value: nvidia
+        effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hdc-robot-controller-service
+  namespace: robotics
+  labels:
+    app: hdc-robot-controller
+spec:
+  selector:
+    app: hdc-robot-controller
+  ports:
+  - name: http-api
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  - name: ros-master
+    port: 11311
+    targetPort: 11311
+    protocol: TCP
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hdc-redis-service
+  namespace: robotics
+  labels:
+    app: hdc-redis
+spec:
+  selector:
+    app: hdc-robot-controller
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hdc-storage-pvc
+  namespace: robotics
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-storage-pvc
+  namespace: robotics
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hdc-config
+  namespace: robotics
+data:
+  hdc_config.yaml: |
+    hdc:
+      dimension: 10000
+      learning_rate: 0.01
+      similarity_threshold: 0.7
+      max_behaviors: 1000
+      
+    sensors:
+      lidar:
+        enabled: true
+        topic: "/scan"
+        encoding_dim: 1000
+      camera:
+        enabled: true  
+        topic: "/camera/image_raw"
+        encoding_dim: 2000
+      imu:
+        enabled: true
+        topic: "/imu/data"
+        encoding_dim: 500
+      joints:
+        enabled: true
+        topic: "/joint_states"
+        encoding_dim: 500
+        
+    control:
+      frequency: 50  # Hz
+      safety_timeout: 1.0  # seconds
+      max_velocity: 2.0  # m/s
+      max_angular: 1.5  # rad/s
+      
+    distributed:
+      enabled: true
+      coordinator_port: 7000
+      worker_ports: [7001, 7002, 7003]
+      chunk_size: 1000
+      
+    security:
+      level: "STANDARD"
+      session_timeout: 3600  # seconds
+      rate_limit: 100  # requests per minute
+      encryption_enabled: false
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: hdc-worker-nodes
+  namespace: robotics
+  labels:
+    app: hdc-worker
+spec:
+  selector:
+    matchLabels:
+      app: hdc-worker
+  template:
+    metadata:
+      labels:
+        app: hdc-worker
+    spec:
+      containers:
+      - name: hdc-worker
+        image: terragon/hdc-robot-controller:v3.0
+        command: ["python3", "-m", "hdc_robot_controller.scaling.distributed_worker"]
+        env:
+        - name: HDC_WORKER_MODE
+          value: "true"
+        - name: HDC_COORDINATOR_HOST
+          value: "hdc-robot-controller-service"
+        - name: REDIS_HOST
+          value: "hdc-redis-service"
+        - name: HDC_GPU_ENABLED
+          value: "true"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+            nvidia.com/gpu: "1"
+      nodeSelector:
+        gpu: nvidia
+        worker: enabled

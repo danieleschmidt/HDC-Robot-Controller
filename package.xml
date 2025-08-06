@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>hdc_robot_controller</name>
+  <version>1.0.0</version>
+  <description>ROS 2 package implementing hyperdimensional computing for robust robotic control</description>
+  
+  <maintainer email="daniel@terragonlabs.com">Daniel Schmidt</maintainer>
+  <license>BSD-3-Clause</license>
+  
+  <url type="website">https://github.com/danieleschmidt/HDC-Robot-Controller</url>
+  <url type="bugtracker">https://github.com/danieleschmidt/HDC-Robot-Controller/issues</url>
+  <url type="repository">https://github.com/danieleschmidt/HDC-Robot-Controller</url>
+  
+  <author email="daniel@terragonlabs.com">Daniel Schmidt</author>
+  
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+  
+  <!-- ROS 2 dependencies -->
+  <depend>rclcpp</depend>
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  
+  <!-- Vision and perception -->
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+  <depend>pcl_ros</depend>
+  
+  <!-- Python dependencies -->
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  
+  <!-- Testing -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_pytest</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

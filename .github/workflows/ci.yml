@@ -1,0 +1,348 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Code Quality Checks
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies  
+      run: |
+        python -m pip install --upgrade pip
+        pip install black flake8 mypy isort bandit safety
+        pip install -e .[dev]
+    
+    - name: Format check with Black
+      run: black --check --diff .
+    
+    - name: Lint with flake8
+      run: flake8 hdc_robot_controller test --max-line-length=100 --ignore=E203,W503
+    
+    - name: Type check with mypy
+      run: mypy hdc_robot_controller --ignore-missing-imports
+    
+    - name: Import sorting check
+      run: isort --check-only --diff .
+    
+    - name: Security check with bandit
+      run: bandit -r hdc_robot_controller -f json -o bandit-report.json || true
+    
+    - name: Dependency vulnerability check
+      run: safety check --json --output safety-report.json || true
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  # Unit Tests
+  test:
+    name: Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-20.04]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          libgtest-dev \
+          libeigen3-dev \
+          libopencv-dev \
+          pkg-config
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+    
+    - name: Build C++ components
+      run: |
+        mkdir -p build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON ..
+        make -j$(nproc)
+    
+    - name: Run C++ tests
+      run: |
+        cd build
+        ctest --output-on-failure --verbose
+    
+    - name: Run Python tests
+      run: |
+        pytest --cov=hdc_robot_controller --cov-report=xml --cov-report=html
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  # ROS 2 Integration Tests  
+  ros2-tests:
+    name: ROS 2 Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ros-distro: [humble, iron]
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up ROS 2 ${{ matrix.ros-distro }}
+      uses: ros-tooling/setup-ros@v0.6
+      with:
+        required-ros-distributions: ${{ matrix.ros-distro }}
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-colcon-common-extensions
+        rosdep update
+        rosdep install --from-paths . --ignore-src -r -y
+    
+    - name: Build ROS 2 package
+      run: |
+        source /opt/ros/${{ matrix.ros-distro }}/setup.bash
+        colcon build --packages-select hdc_robot_controller
+    
+    - name: Run ROS 2 tests
+      run: |
+        source /opt/ros/${{ matrix.ros-distro }}/setup.bash
+        source install/setup.bash
+        colcon test --packages-select hdc_robot_controller
+        colcon test-result --verbose
+
+  # Performance Benchmarks
+  benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for performance comparison
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+        pip install pytest-benchmark
+    
+    - name: Run benchmarks
+      run: |
+        pytest test/benchmarks/ --benchmark-json=benchmark-results.json
+    
+    - name: Store benchmark results
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        tool: 'pytest'
+        output-file-path: benchmark-results.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+
+  # CUDA Tests (Optional)
+  cuda-tests:
+    name: CUDA Tests
+    runs-on: [self-hosted, gpu]
+    if: contains(github.event.head_commit.message, '[cuda]') || github.event_name == 'schedule'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up CUDA
+      uses: Jimver/cuda-toolkit@v0.2.11
+      with:
+        cuda: '12.0'
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        WITH_CUDA=1 pip install -e .[dev,cuda]
+    
+    - name: Run CUDA tests
+      run: |
+        pytest test/ -m cuda --verbose
+
+  # Security Scans
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Docker Build & Push
+  docker:
+    name: Docker Build & Push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: [quality, test]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Documentation
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+        pip install sphinx sphinx-rtd-theme myst-parser
+    
+    - name: Build documentation
+      run: |
+        cd docs
+        make html
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs/_build/html
+
+  # Release
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [quality, test, ros2-tests]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+    
+    - name: Build package
+      run: python -m build
+    
+    - name: Check package
+      run: twine check dist/*
+    
+    - name: Create GitHub Release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "dist/*"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        draft: false
+        prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+    
+    - name: Publish to PyPI
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: twine upload dist/*

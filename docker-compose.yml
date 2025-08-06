@@ -1,0 +1,224 @@
+version: '3.8'
+
+services:
+  # HDC Robot Controller Base Service
+  hdc-controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: hdc-robot-controller:latest
+    container_name: hdc-controller
+    hostname: hdc-controller
+    restart: unless-stopped
+    environment:
+      - ROS_DOMAIN_ID=0
+      - HDC_DIMENSION=10000
+      - HDC_ENABLE_CUDA=false
+      - HDC_DEBUG=false
+    volumes:
+      - ./config:/home/hdc_user/hdc_robot_controller/config:ro
+      - ./data:/home/hdc_user/data
+      - hdc_logs:/var/log/hdc
+    networks:
+      - hdc-network
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import hdc_robot_controller; hdc_robot_controller.validate_installation()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # HDC Controller with CUDA Support
+  hdc-controller-gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cuda-runtime
+    image: hdc-robot-controller:cuda
+    container_name: hdc-controller-gpu
+    hostname: hdc-controller-gpu
+    restart: unless-stopped
+    runtime: nvidia
+    environment:
+      - ROS_DOMAIN_ID=0
+      - HDC_DIMENSION=10000
+      - HDC_ENABLE_CUDA=true
+      - HDC_DEBUG=false
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./config:/home/hdc_user/hdc_robot_controller/config:ro
+      - ./data:/home/hdc_user/data
+      - hdc_logs:/var/log/hdc
+    networks:
+      - hdc-network
+    profiles:
+      - gpu
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import hdc_robot_controller; hdc_robot_controller.validate_installation()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ROS 2 Simulation Environment
+  gazebo-sim:
+    image: osrf/ros:humble-desktop
+    container_name: hdc-gazebo
+    hostname: hdc-gazebo
+    restart: unless-stopped
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_DOMAIN_ID=0
+      - GAZEBO_MODEL_PATH=/workspace/models
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./simulators/gazebo_worlds:/workspace/worlds:ro
+      - ./simulators/models:/workspace/models:ro
+    networks:
+      - hdc-network
+    profiles:
+      - simulation
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.bash &&
+        gazebo --verbose /workspace/worlds/hdc_test_world.world
+      "
+
+  # Visualization Service
+  rviz:
+    image: osrf/ros:humble-desktop
+    container_name: hdc-rviz
+    hostname: hdc-rviz
+    restart: unless-stopped
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./config/rviz:/workspace/rviz_config:ro
+    networks:
+      - hdc-network
+    profiles:
+      - visualization
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.bash &&
+        rviz2 -d /workspace/rviz_config/hdc_config.rviz
+      "
+
+  # Monitoring and Logging
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: hdc-prometheus
+    hostname: hdc-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - hdc-network
+    profiles:
+      - monitoring
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: hdc-grafana
+    hostname: hdc-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning:ro
+    networks:
+      - hdc-network
+    profiles:
+      - monitoring
+    depends_on:
+      - prometheus
+
+  # Development Environment
+  hdc-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: hdc-robot-controller:dev
+    container_name: hdc-dev
+    hostname: hdc-dev
+    restart: unless-stopped
+    environment:
+      - ROS_DOMAIN_ID=0
+      - HDC_DIMENSION=10000
+      - HDC_DEBUG=true
+    volumes:
+      - .:/workspace/hdc_robot_controller
+      - hdc_logs:/var/log/hdc
+    networks:
+      - hdc-network
+    profiles:
+      - development
+    working_dir: /workspace/hdc_robot_controller
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.bash &&
+        tail -f /dev/null
+      "
+
+  # Testing Environment
+  hdc-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: hdc-robot-controller:test
+    container_name: hdc-test
+    hostname: hdc-test
+    environment:
+      - ROS_DOMAIN_ID=0
+      - PYTEST_ARGS=--verbose --cov=hdc_robot_controller
+    volumes:
+      - .:/workspace/hdc_robot_controller
+      - test_results:/workspace/test_results
+    networks:
+      - hdc-network
+    profiles:
+      - testing
+    working_dir: /workspace/hdc_robot_controller
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.bash &&
+        python -m pytest ${PYTEST_ARGS} test/
+      "
+
+volumes:
+  hdc_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  test_results:
+    driver: local
+
+networks:
+  hdc-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16

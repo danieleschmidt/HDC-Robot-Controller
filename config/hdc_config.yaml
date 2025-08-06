@@ -1,0 +1,282 @@
+# HDC Robot Controller Configuration
+
+# Global HDC Parameters
+hdc:
+  dimension: 10000
+  similarity_threshold: 0.7
+  learning_rate: 0.1
+  enable_cuda: false
+  debug_mode: false
+  log_level: "INFO"
+
+# Perception Configuration
+perception:
+  sensor_modalities:
+    - lidar
+    - camera
+    - imu
+    - joint_encoders
+  
+  fusion_rate: 50.0  # Hz
+  encoding_method: "spatial_grid"
+  noise_tolerance: 0.2
+  
+  # Sensor-specific parameters
+  lidar:
+    resolution: 0.1  # meters
+    max_range: 30.0
+    min_range: 0.1
+    angle_resolution: 0.5  # degrees
+    
+  camera:
+    encoding: "visual_features"
+    backbone: "mobilenet"
+    image_size: [224, 224]
+    feature_dim: 1024
+    
+  imu:
+    encoding: "temporal_sequence"
+    window_size: 0.5  # seconds
+    sample_rate: 100.0  # Hz
+    
+  joint_encoders:
+    encoding: "joint_space"
+    position_resolution: 0.01  # radians
+    velocity_resolution: 0.1   # rad/s
+
+# Learning Configuration  
+learning:
+  enable_online_learning: true
+  one_shot_learning: true
+  learning_rate: 0.1
+  similarity_threshold: 0.85
+  memory_size: 1000
+  consolidation_period: 100.0  # seconds
+  
+  # Adaptation parameters
+  adaptation_rate: 0.05
+  novelty_threshold: 0.3
+  consolidation_similarity: 0.95
+  
+  # Episodic memory
+  max_episodes: 500
+  episode_importance_decay: 0.02
+  max_episode_age_hours: 168  # 1 week
+
+# Control Configuration
+control:
+  control_frequency: 100.0  # Hz
+  fault_tolerance_mode: true
+  sensor_dropout_threshold: 0.5
+  safety_mode_threshold: 0.4
+  redundancy_factor: 3
+  
+  # Motor control
+  max_linear_velocity: 2.0   # m/s
+  max_angular_velocity: 1.5  # rad/s  
+  max_joint_velocity: 3.14   # rad/s
+  
+  # Safety parameters
+  emergency_stop_threshold: 0.2
+  collision_avoidance_distance: 0.5  # meters
+  recovery_behavior_timeout: 5.0     # seconds
+
+# Planning Configuration
+planning:
+  planning_horizon: 10.0  # seconds
+  replan_frequency: 2.0   # Hz
+  goal_tolerance: 0.1     # meters
+  path_optimization: true
+  
+  # Search parameters
+  search_method: "hdc_gradient_following"
+  max_iterations: 1000
+  step_size: 0.05  # meters
+  
+  # Obstacle avoidance
+  obstacle_inflation: 0.2  # meters
+  dynamic_obstacle_prediction: true
+
+# Memory Configuration
+memory:
+  # Associative memory
+  associative:
+    similarity_threshold: 0.7
+    max_entries: 10000
+    confidence_decay_rate: 0.01
+    min_confidence: 0.1
+    
+  # Working memory  
+  working:
+    capacity: 100
+    pattern_length: 3
+    context_blend_factor: 0.5
+    
+  # Hierarchical memory
+  consolidation_threshold: 0.9
+  memory_cleanup_interval: 300.0  # seconds
+
+# Hardware Configuration
+hardware:
+  # CUDA settings
+  cuda:
+    enable: false
+    device_id: 0
+    memory_pool_mb: 512
+    
+  # CPU settings
+  cpu:
+    num_threads: -1  # Use all available cores
+    optimization_level: "O3"
+
+# Robot-Specific Configurations
+robots:
+  mobile_manipulator:
+    base_frame: "base_link"
+    odom_frame: "odom"
+    map_frame: "map"
+    joint_names:
+      - "shoulder_pan_joint"
+      - "shoulder_lift_joint"  
+      - "elbow_joint"
+      - "wrist_1_joint"
+      - "wrist_2_joint"
+      - "wrist_3_joint"
+    
+  drone:
+    base_frame: "base_link"
+    world_frame: "world"
+    max_altitude: 50.0  # meters
+    max_velocity: 10.0  # m/s
+    
+  humanoid:
+    base_frame: "base_link"
+    torso_frame: "torso"
+    joint_groups:
+      - "left_arm"
+      - "right_arm"
+      - "left_leg" 
+      - "right_leg"
+      - "head"
+
+# Behavior Library
+behaviors:
+  # Navigation behaviors
+  navigation:
+    - name: "go_to_goal"
+      description: "Navigate to a goal position"
+      modalities: ["lidar", "imu"]
+      
+    - name: "follow_wall"
+      description: "Follow along a wall"
+      modalities: ["lidar"]
+      
+    - name: "avoid_obstacle"
+      description: "Avoid dynamic obstacles"
+      modalities: ["lidar", "camera"]
+  
+  # Manipulation behaviors  
+  manipulation:
+    - name: "pick_object"
+      description: "Pick up an object"
+      modalities: ["camera", "joint_encoders"]
+      
+    - name: "place_object" 
+      description: "Place object at location"
+      modalities: ["camera", "joint_encoders"]
+      
+    - name: "handover_object"
+      description: "Hand object to human"
+      modalities: ["camera", "joint_encoders"]
+  
+  # Human interaction
+  interaction:
+    - name: "follow_human"
+      description: "Follow a human"
+      modalities: ["camera", "lidar"]
+      
+    - name: "gesture_recognition"
+      description: "Recognize human gestures"
+      modalities: ["camera"]
+
+# Simulation Configuration
+simulation:
+  world: "hdc_test_world.world"
+  physics_engine: "ode"
+  real_time_factor: 1.0
+  
+  # Sensor simulation
+  add_sensor_noise: true
+  sensor_failure_probability: 0.01
+  dynamic_obstacles: true
+  
+  # Gazebo-specific
+  gazebo:
+    gui: true
+    verbose: false
+    record: false
+
+# Monitoring and Diagnostics
+monitoring:
+  enable_diagnostics: true
+  publish_rate: 1.0  # Hz
+  
+  # Performance monitoring
+  memory_usage_threshold: 0.8
+  cpu_usage_threshold: 0.8
+  control_latency_threshold: 0.01  # seconds
+  
+  # Health checks
+  node_heartbeat_timeout: 5.0  # seconds
+  sensor_timeout: 1.0          # seconds
+  
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARN, ERROR
+  log_to_file: true
+  log_directory: "/tmp/hdc_logs"
+  max_log_size_mb: 100
+  max_log_files: 10
+  
+  # Component-specific logging
+  perception: "INFO"
+  learning: "INFO" 
+  control: "INFO"
+  planning: "INFO"
+  memory: "DEBUG"
+
+# Visualization Configuration
+visualization:
+  enable: false
+  rate: 5.0  # Hz
+  
+  # What to visualize
+  show_hypervectors: true
+  show_similarities: true
+  show_memory_state: true
+  show_sensor_fusion: true
+  
+  # Display parameters
+  marker_scale: 0.1
+  color_scheme: "viridis"
+  max_markers: 1000
+
+# Benchmarking Configuration
+benchmarking:
+  enable: false
+  output_directory: "/tmp/hdc_benchmarks"
+  
+  # Test scenarios
+  scenarios:
+    - "fault_tolerance"
+    - "learning_speed"
+    - "control_quality"
+    - "memory_efficiency"
+  
+  # Metrics to collect
+  metrics:
+    - "latency"
+    - "throughput"
+    - "accuracy"  
+    - "memory_usage"
+    - "cpu_usage"

@@ -1,0 +1,65 @@
+include README.md
+include LICENSE
+include requirements.txt
+include setup.py
+include MANIFEST.in
+
+# Configuration files
+recursive-include config *.yaml *.yml *.json
+recursive-include launch *.launch *.launch.py *.xml
+
+# ROS package files  
+include package.xml
+include CMakeLists.txt
+
+# Source code
+recursive-include hdc_robot_controller *.py *.pyi
+recursive-include hdc_core *.hpp *.cpp *.cu *.h
+
+# Examples and documentation
+recursive-include examples *.py *.md *.launch *.yaml
+recursive-include docs *.md *.rst *.txt
+
+# Test files
+recursive-include test *.py *.cpp *.hpp *.yaml *.json *.xml
+
+# Scripts
+recursive-include scripts *.py *.sh *.bash
+
+# Docker files
+include Dockerfile
+include .dockerignore
+include docker-compose.yml
+
+# CI/CD files
+recursive-include .github *.yml *.yaml
+
+# Robot description files
+recursive-include urdf *.urdf *.xacro
+recursive-include meshes *.stl *.dae *.obj
+recursive-include textures *.png *.jpg *.jpeg
+
+# Behavior and model files
+recursive-include behaviors *.hdc *.yaml *.json
+recursive-include models *.pkl *.onnx *.pt *.pth
+
+# Exclude compiled and temporary files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.so
+global-exclude *.dylib
+global-exclude *.dll
+global-exclude __pycache__
+global-exclude .git*
+global-exclude *.tmp
+global-exclude *.temp
+global-exclude .DS_Store
+global-exclude Thumbs.db
+
+# Exclude build artifacts
+global-exclude build/*
+global-exclude install/*
+global-exclude log/*
+global-exclude devel/*
+global-exclude CMakeFiles/*
+global-exclude CMakeCache.txt

@@ -1,0 +1,1615 @@
+{
+  "validation_metadata": {
+    "timestamp": 1754830528.4305754,
+    "repo_path": ".",
+    "python_version": "3.12.3 (main, Jun 18 2025, 17:59:45) [GCC 13.3.0]",
+    "validation_duration_seconds": 1.8449428081512451
+  },
+  "file_structure": {
+    "core_modules": {
+      "hdc_robot_controller/core/hypervector.py": {
+        "exists": true,
+        "size_bytes": 12681,
+        "last_modified": 1754829403.8018744
+      },
+      "hdc_robot_controller/core/operations.py": {
+        "exists": true,
+        "size_bytes": 11335,
+        "last_modified": 1754829403.8018744
+      },
+      "hdc_robot_controller/core/memory.py": {
+        "exists": true,
+        "size_bytes": 18430,
+        "last_modified": 1754829403.8018744
+      }
+    },
+    "advanced_intelligence": {
+      "hdc_robot_controller/advanced_intelligence/__init__.py": {
+        "exists": true,
+        "size_bytes": 737,
+        "last_modified": 1754829480.097526
+      },
+      "hdc_robot_controller/advanced_intelligence/multi_modal_fusion.py": {
+        "exists": true,
+        "size_bytes": 22998,
+        "last_modified": 1754829556.0564082
+      },
+      "hdc_robot_controller/advanced_intelligence/quantum_hdc.py": {
+        "exists": true,
+        "size_bytes": 24495,
+        "last_modified": 1754829640.6400714
+      },
+      "hdc_robot_controller/advanced_intelligence/neural_hdc_hybrid.py": {
+        "exists": true,
+        "size_bytes": 32665,
+        "last_modified": 1754829749.685951
+      },
+      "hdc_robot_controller/advanced_intelligence/symbolic_reasoner.py": {
+        "exists": true,
+        "size_bytes": 34118,
+        "last_modified": 1754829872.5290813
+      },
+      "hdc_robot_controller/advanced_intelligence/meta_learner.py": {
+        "exists": true,
+        "size_bytes": 32368,
+        "last_modified": 1754829983.1951087
+      }
+    },
+    "autonomous_mastery": {
+      "hdc_robot_controller/autonomous_mastery/__init__.py": {
+        "exists": true,
+        "size_bytes": 677,
+        "last_modified": 1754829999.3645737
+      },
+      "hdc_robot_controller/autonomous_mastery/self_modifying_code.py": {
+        "exists": true,
+        "size_bytes": 34344,
+        "last_modified": 1754830106.5582864
+      },
+      "hdc_robot_controller/autonomous_mastery/adaptive_architecture.py": {
+        "exists": true,
+        "size_bytes": 37581,
+        "last_modified": 1754830219.5205219
+      }
+    },
+    "tests": {
+      "tests/test_advanced_intelligence.py": {
+        "exists": true,
+        "size_bytes": 26795,
+        "last_modified": 1754830330.7185974
+      },
+      "tests/test_autonomous_mastery.py": {
+        "exists": true,
+        "size_bytes": 25498,
+        "last_modified": 1754830421.9508638
+      }
+    },
+    "configuration": {
+      "pyproject.toml": {
+        "exists": true,
+        "size_bytes": 2571,
+        "last_modified": 1754829403.8058789
+      },
+      "requirements.txt": {
+        "exists": true,
+        "size_bytes": 199,
+        "last_modified": 1754829403.8058789
+      },
+      "README.md": {
+        "exists": true,
+        "size_bytes": 27727,
+        "last_modified": 1754829403.7938652
+      }
+    }
+  },
+  "syntax_validation": {
+    "setup.py": {
+      "syntax_valid": true,
+      "lines_of_code": 206,
+      "ast_nodes": 466,
+      "functions": 3,
+      "classes": 1,
+      "imports": 6
+    },
+    "test_comprehensive.py": {
+      "syntax_valid": true,
+      "lines_of_code": 513,
+      "ast_nodes": 2065,
+      "functions": 13,
+      "classes": 0,
+      "imports": 26
+    },
+    "validation_report.py": {
+      "syntax_valid": true,
+      "lines_of_code": 681,
+      "ast_nodes": 3555,
+      "functions": 23,
+      "classes": 1,
+      "imports": 8
+    },
+    "evolution/autonomous_learner.py": {
+      "syntax_valid": true,
+      "lines_of_code": 937,
+      "ast_nodes": 4937,
+      "functions": 30,
+      "classes": 5,
+      "imports": 11
+    },
+    "global/i18n_manager.py": {
+      "syntax_valid": true,
+      "lines_of_code": 893,
+      "ast_nodes": 3415,
+      "functions": 21,
+      "classes": 5,
+      "imports": 10
+    },
+    "hdc_robot_controller/__init__.py": {
+      "syntax_valid": true,
+      "lines_of_code": 200,
+      "ast_nodes": 659,
+      "functions": 12,
+      "classes": 1,
+      "imports": 15
+    },
+    "launch/hdc_robot_controller.launch.py": {
+      "syntax_valid": true,
+      "lines_of_code": 308,
+      "ast_nodes": 731,
+      "functions": 1,
+      "classes": 0,
+      "imports": 8
+    },
+    "monitoring/health_monitor.py": {
+      "syntax_valid": true,
+      "lines_of_code": 637,
+      "ast_nodes": 2866,
+      "functions": 16,
+      "classes": 4,
+      "imports": 12
+    },
+    "scripts/benchmark_suite.py": {
+      "syntax_valid": true,
+      "lines_of_code": 813,
+      "ast_nodes": 4566,
+      "functions": 25,
+      "classes": 3,
+      "imports": 15
+    },
+    "scripts/demo_controller.py": {
+      "syntax_valid": true,
+      "lines_of_code": 393,
+      "ast_nodes": 1892,
+      "functions": 11,
+      "classes": 1,
+      "imports": 13
+    },
+    "scripts/quality_checker.py": {
+      "syntax_valid": true,
+      "lines_of_code": 791,
+      "ast_nodes": 3901,
+      "functions": 23,
+      "classes": 2,
+      "imports": 12
+    },
+    "self_improving/adaptive_optimizer.py": {
+      "syntax_valid": true,
+      "lines_of_code": 939,
+      "ast_nodes": 4650,
+      "functions": 22,
+      "classes": 6,
+      "imports": 14
+    },
+    "tests/test_hdc_comprehensive.py": {
+      "syntax_valid": true,
+      "lines_of_code": 815,
+      "ast_nodes": 4947,
+      "functions": 41,
+      "classes": 8,
+      "imports": 14
+    },
+    "tests/test_advanced_intelligence.py": {
+      "syntax_valid": true,
+      "lines_of_code": 735,
+      "ast_nodes": 3165,
+      "functions": 38,
+      "classes": 7,
+      "imports": 11
+    },
+    "tests/test_autonomous_mastery.py": {
+      "syntax_valid": false,
+      "error": "unexpected character after line continuation character (<unknown>, line 46)",
+      "line_number": 46
+    },
+    "validation/security_validator.py": {
+      "syntax_valid": true,
+      "lines_of_code": 1365,
+      "ast_nodes": 5384,
+      "functions": 46,
+      "classes": 5,
+      "imports": 15
+    },
+    "hdc_robot_controller/core/__init__.py": {
+      "syntax_valid": true,
+      "lines_of_code": 12,
+      "ast_nodes": 30,
+      "functions": 0,
+      "classes": 0,
+      "imports": 4
+    },
+    "hdc_robot_controller/core/encoding.py": {
+      "syntax_valid": true,
+      "lines_of_code": 426,
+      "ast_nodes": 2916,
+      "functions": 27,
+      "classes": 6,
+      "imports": 6
+    },
+    "hdc_robot_controller/core/error_handling.py": {
+      "syntax_valid": true,
+      "lines_of_code": 490,
+      "ast_nodes": 2548,
+      "functions": 35,
+      "classes": 12,
+      "imports": 9
+    },
+    "hdc_robot_controller/core/hypervector.py": {
+      "syntax_valid": true,
+      "lines_of_code": 354,
+      "ast_nodes": 2056,
+      "functions": 40,
+      "classes": 1,
+      "imports": 6
+    },
+    "hdc_robot_controller/core/memory.py": {
+      "syntax_valid": true,
+      "lines_of_code": 477,
+      "ast_nodes": 2780,
+      "functions": 47,
+      "classes": 4,
+      "imports": 10
+    },
+    "hdc_robot_controller/core/operations.py": {
+      "syntax_valid": true,
+      "lines_of_code": 307,
+      "ast_nodes": 1909,
+      "functions": 32,
+      "classes": 3,
+      "imports": 4
+    },
+    "hdc_robot_controller/core/security.py": {
+      "syntax_valid": true,
+      "lines_of_code": 634,
+      "ast_nodes": 3431,
+      "functions": 35,
+      "classes": 9,
+      "imports": 15
+    },
+    "hdc_robot_controller/optimization/performance_optimizer.py": {
+      "syntax_valid": true,
+      "lines_of_code": 691,
+      "ast_nodes": 4038,
+      "functions": 52,
+      "classes": 8,
+      "imports": 20
+    },
+    "hdc_robot_controller/research/benchmark_suite.py": {
+      "syntax_valid": true,
+      "lines_of_code": 951,
+      "ast_nodes": 5623,
+      "functions": 23,
+      "classes": 3,
+      "imports": 22
+    },
+    "hdc_robot_controller/research/meta_learning.py": {
+      "syntax_valid": true,
+      "lines_of_code": 892,
+      "ast_nodes": 3739,
+      "functions": 27,
+      "classes": 4,
+      "imports": 9
+    },
+    "hdc_robot_controller/research/neuromorphic_hdc.py": {
+      "syntax_valid": true,
+      "lines_of_code": 1000,
+      "ast_nodes": 4750,
+      "functions": 33,
+      "classes": 6,
+      "imports": 12
+    },
+    "hdc_robot_controller/research/quantum_hdc.py": {
+      "syntax_valid": true,
+      "lines_of_code": 945,
+      "ast_nodes": 4694,
+      "functions": 34,
+      "classes": 4,
+      "imports": 12
+    },
+    "hdc_robot_controller/robustness/error_recovery.py": {
+      "syntax_valid": true,
+      "lines_of_code": 964,
+      "ast_nodes": 4153,
+      "functions": 44,
+      "classes": 8,
+      "imports": 16
+    },
+    "hdc_robot_controller/robustness/fault_tolerance.py": {
+      "syntax_valid": true,
+      "lines_of_code": 1141,
+      "ast_nodes": 4950,
+      "functions": 41,
+      "classes": 10,
+      "imports": 14
+    },
+    "hdc_robot_controller/scaling/distributed_processing.py": {
+      "syntax_valid": true,
+      "lines_of_code": 906,
+      "ast_nodes": 4756,
+      "functions": 35,
+      "classes": 9,
+      "imports": 18
+    },
+    "hdc_robot_controller/scaling/performance_optimizer.py": {
+      "syntax_valid": true,
+      "lines_of_code": 1058,
+      "ast_nodes": 5760,
+      "functions": 47,
+      "classes": 8,
+      "imports": 20
+    },
+    "hdc_robot_controller/security/security_framework.py": {
+      "syntax_valid": true,
+      "lines_of_code": 1009,
+      "ast_nodes": 4861,
+      "functions": 41,
+      "classes": 11,
+      "imports": 22
+    },
+    "hdc_robot_controller/advanced_intelligence/multi_modal_fusion.py": {
+      "syntax_valid": false,
+      "error": "unexpected character after line continuation character (<unknown>, line 217)",
+      "line_number": 217
+    },
+    "hdc_robot_controller/advanced_intelligence/__init__.py": {
+      "syntax_valid": true,
+      "lines_of_code": 25,
+      "ast_nodes": 27,
+      "functions": 0,
+      "classes": 0,
+      "imports": 5
+    },
+    "hdc_robot_controller/advanced_intelligence/neural_hdc_hybrid.py": {
+      "syntax_valid": true,
+      "lines_of_code": 838,
+      "ast_nodes": 4215,
+      "functions": 17,
+      "classes": 6,
+      "imports": 14
+    },
+    "hdc_robot_controller/advanced_intelligence/quantum_hdc.py": {
+      "syntax_valid": false,
+      "error": "unexpected character after line continuation character (<unknown>, line 180)",
+      "line_number": 180
+    },
+    "hdc_robot_controller/advanced_intelligence/symbolic_reasoner.py": {
+      "syntax_valid": true,
+      "lines_of_code": 871,
+      "ast_nodes": 4578,
+      "functions": 44,
+      "classes": 8,
+      "imports": 10
+    },
+    "hdc_robot_controller/advanced_intelligence/meta_learner.py": {
+      "syntax_valid": true,
+      "lines_of_code": 840,
+      "ast_nodes": 4545,
+      "functions": 29,
+      "classes": 6,
+      "imports": 16
+    },
+    "hdc_robot_controller/autonomous_mastery/self_modifying_code.py": {
+      "syntax_valid": true,
+      "lines_of_code": 908,
+      "ast_nodes": 4059,
+      "functions": 30,
+      "classes": 6,
+      "imports": 20
+    },
+    "hdc_robot_controller/autonomous_mastery/__init__.py": {
+      "syntax_valid": true,
+      "lines_of_code": 21,
+      "ast_nodes": 27,
+      "functions": 0,
+      "classes": 0,
+      "imports": 5
+    },
+    "hdc_robot_controller/autonomous_mastery/adaptive_architecture.py": {
+      "syntax_valid": true,
+      "lines_of_code": 960,
+      "ast_nodes": 4519,
+      "functions": 40,
+      "classes": 7,
+      "imports": 15
+    },
+    "research/algorithms/adaptive_hdc.py": {
+      "syntax_valid": true,
+      "lines_of_code": 381,
+      "ast_nodes": 2122,
+      "functions": 8,
+      "classes": 2,
+      "imports": 9
+    },
+    "research/benchmarks/comparative_study.py": {
+      "syntax_valid": true,
+      "lines_of_code": 634,
+      "ast_nodes": 3274,
+      "functions": 33,
+      "classes": 6,
+      "imports": 14
+    },
+    "research/experiments/reproducible_framework.py": {
+      "syntax_valid": true,
+      "lines_of_code": 592,
+      "ast_nodes": 3428,
+      "functions": 17,
+      "classes": 3,
+      "imports": 16
+    },
+    "src/hdc_robot_controller/__init__.py": {
+      "syntax_valid": true,
+      "lines_of_code": 28,
+      "ast_nodes": 43,
+      "functions": 0,
+      "classes": 0,
+      "imports": 7
+    },
+    "src/hdc_robot_controller/core/hypervector.py": {
+      "syntax_valid": true,
+      "lines_of_code": 282,
+      "ast_nodes": 1628,
+      "functions": 27,
+      "classes": 2,
+      "imports": 7
+    },
+    "src/hdc_robot_controller/core/operations.py": {
+      "syntax_valid": true,
+      "lines_of_code": 348,
+      "ast_nodes": 1520,
+      "functions": 11,
+      "classes": 1,
+      "imports": 6
+    }
+  },
+  "code_complexity": {
+    "hdc_robot_controller/advanced_intelligence/multi_modal_fusion.py": {
+      "error": "unexpected character after line continuation character (<unknown>, line 217)"
+    },
+    "hdc_robot_controller/advanced_intelligence/quantum_hdc.py": {
+      "error": "unexpected character after line continuation character (<unknown>, line 180)"
+    },
+    "hdc_robot_controller/advanced_intelligence/neural_hdc_hybrid.py": {
+      "cyclomatic_complexity": 55,
+      "function_count": 17,
+      "class_count": 6,
+      "max_nesting_depth": 7,
+      "lines_of_code": 681,
+      "documentation_ratio": 0.21145374449339208
+    },
+    "hdc_robot_controller/autonomous_mastery/self_modifying_code.py": {
+      "cyclomatic_complexity": 81,
+      "function_count": 30,
+      "class_count": 6,
+      "max_nesting_depth": 9,
+      "lines_of_code": 728,
+      "documentation_ratio": 0.18681318681318682
+    },
+    "hdc_robot_controller/autonomous_mastery/adaptive_architecture.py": {
+      "cyclomatic_complexity": 77,
+      "function_count": 40,
+      "class_count": 7,
+      "max_nesting_depth": 7,
+      "lines_of_code": 782,
+      "documentation_ratio": 0.1815856777493606
+    }
+  },
+  "import_analysis": {
+    "setup.py": {
+      "standard_library": [
+        "os",
+        "sys"
+      ],
+      "third_party": [
+        "setuptools",
+        "pybind11",
+        "pybind11",
+        "pybind11.setup_helpers"
+      ],
+      "local": []
+    },
+    "test_comprehensive.py": {
+      "standard_library": [
+        "sys",
+        "os",
+        "time",
+        "pathlib",
+        "time",
+        "sys"
+      ],
+      "third_party": [
+        "numpy"
+      ],
+      "local": [
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.core.operations",
+        "hdc_robot_controller.research.meta_learning",
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.research.quantum_hdc",
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.research.neuromorphic_hdc",
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.robustness.fault_tolerance",
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.security.security_framework",
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.scaling.performance_optimizer",
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.research.meta_learning",
+        "hdc_robot_controller.robustness.fault_tolerance",
+        "hdc_robot_controller.scaling.performance_optimizer"
+      ]
+    },
+    "validation_report.py": {
+      "standard_library": [
+        "sys",
+        "os",
+        "ast",
+        "inspect",
+        "time",
+        "pathlib",
+        "typing",
+        "json"
+      ],
+      "third_party": [],
+      "local": []
+    },
+    "evolution/autonomous_learner.py": {
+      "standard_library": [
+        "time",
+        "threading",
+        "json",
+        "random",
+        "typing",
+        "dataclasses",
+        "enum",
+        "collections",
+        "os"
+      ],
+      "third_party": [
+        "logging",
+        "copy"
+      ],
+      "local": []
+    },
+    "global/i18n_manager.py": {
+      "standard_library": [
+        "json",
+        "os",
+        "typing",
+        "dataclasses",
+        "enum",
+        "threading",
+        "time",
+        "collections"
+      ],
+      "third_party": [
+        "logging",
+        "datetime"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/__init__.py": {
+      "standard_library": [],
+      "third_party": [
+        "core.hypervector",
+        "core.encoding",
+        "core.memory",
+        "core.operations",
+        "core.encoding",
+        "control.fault_tolerant_controller",
+        "control.behavior_learner",
+        "control.hdc_controller",
+        "utils.benchmarks",
+        "utils.visualization",
+        "utils.logger",
+        "rclpy",
+        "ros2_integration.perception_node",
+        "ros2_integration.control_node",
+        "ros2_integration.learning_node"
+      ],
+      "local": []
+    },
+    "launch/hdc_robot_controller.launch.py": {
+      "standard_library": [
+        "os"
+      ],
+      "third_party": [
+        "launch",
+        "launch.actions",
+        "launch.conditions",
+        "launch.launch_description_sources",
+        "launch.substitutions",
+        "launch_ros.actions",
+        "launch_ros.substitutions"
+      ],
+      "local": []
+    },
+    "monitoring/health_monitor.py": {
+      "standard_library": [
+        "time",
+        "threading",
+        "json",
+        "typing",
+        "dataclasses",
+        "collections",
+        "enum",
+        "os"
+      ],
+      "third_party": [
+        "logging",
+        "statistics",
+        "numpy",
+        "concurrent.futures"
+      ],
+      "local": []
+    },
+    "scripts/benchmark_suite.py": {
+      "standard_library": [
+        "time",
+        "json",
+        "os",
+        "typing",
+        "dataclasses",
+        "collections"
+      ],
+      "third_party": [
+        "rclpy",
+        "rclpy.node",
+        "std_msgs.msg",
+        "geometry_msgs.msg",
+        "sensor_msgs.msg",
+        "numpy",
+        "matplotlib.pyplot",
+        "psutil",
+        "gc"
+      ],
+      "local": []
+    },
+    "scripts/demo_controller.py": {
+      "standard_library": [
+        "time",
+        "typing",
+        "sys"
+      ],
+      "third_party": [
+        "rclpy",
+        "rclpy.node",
+        "rclpy.qos",
+        "std_msgs.msg",
+        "geometry_msgs.msg",
+        "sensor_msgs.msg",
+        "numpy",
+        "argparse",
+        "termios",
+        "tty"
+      ],
+      "local": []
+    },
+    "scripts/quality_checker.py": {
+      "standard_library": [
+        "os",
+        "sys",
+        "subprocess",
+        "time",
+        "json",
+        "pathlib",
+        "typing",
+        "dataclasses"
+      ],
+      "third_party": [
+        "argparse",
+        "logging",
+        "concurrent.futures",
+        "psutil"
+      ],
+      "local": []
+    },
+    "self_improving/adaptive_optimizer.py": {
+      "standard_library": [
+        "time",
+        "threading",
+        "json",
+        "typing",
+        "dataclasses",
+        "enum",
+        "collections",
+        "os",
+        "hashlib"
+      ],
+      "third_party": [
+        "logging",
+        "numpy",
+        "statistics",
+        "concurrent.futures",
+        "pickle"
+      ],
+      "local": []
+    },
+    "tests/test_hdc_comprehensive.py": {
+      "standard_library": [
+        "time",
+        "os",
+        "threading",
+        "json",
+        "sys"
+      ],
+      "third_party": [
+        "unittest",
+        "numpy",
+        "tempfile",
+        "unittest.mock"
+      ],
+      "local": [
+        "hdc_robot_controller.core.hypervector",
+        "hdc_robot_controller.core.operations",
+        "hdc_robot_controller.core.memory",
+        "hdc_robot_controller.core.error_handling",
+        "hdc_robot_controller.core.security"
+      ]
+    },
+    "tests/test_advanced_intelligence.py": {
+      "standard_library": [
+        "time",
+        "pathlib"
+      ],
+      "third_party": [
+        "pytest",
+        "numpy",
+        "torch"
+      ],
+      "local": [
+        "hdc_robot_controller.advanced_intelligence",
+        "hdc_robot_controller.advanced_intelligence.multi_modal_fusion",
+        "hdc_robot_controller.advanced_intelligence.quantum_hdc",
+        "hdc_robot_controller.advanced_intelligence.neural_hdc_hybrid",
+        "hdc_robot_controller.advanced_intelligence.meta_learner",
+        "hdc_robot_controller.core.hypervector"
+      ]
+    },
+    "tests/test_autonomous_mastery.py": {
+      "error": "unexpected character after line continuation character (<unknown>, line 46)"
+    },
+    "validation/security_validator.py": {
+      "standard_library": [
+        "re",
+        "hashlib",
+        "time",
+        "json",
+        "threading",
+        "typing",
+        "dataclasses",
+        "enum",
+        "collections",
+        "os"
+      ],
+      "third_party": [
+        "secrets",
+        "logging",
+        "base64",
+        "sqlite3",
+        "concurrent.futures"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/core/__init__.py": {
+      "standard_library": [],
+      "third_party": [
+        "hypervector",
+        "operations",
+        "memory",
+        "encoding"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/core/encoding.py": {
+      "standard_library": [
+        "typing"
+      ],
+      "third_party": [
+        "numpy",
+        "cv2",
+        "hypervector",
+        "operations",
+        "operations"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/core/error_handling.py": {
+      "standard_library": [
+        "time",
+        "typing",
+        "enum",
+        "dataclasses",
+        "functools"
+      ],
+      "third_party": [
+        "logging",
+        "traceback",
+        "numpy",
+        "hypervector"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/core/hypervector.py": {
+      "standard_library": [
+        "typing",
+        "os",
+        "sys",
+        "pathlib"
+      ],
+      "third_party": [
+        "ctypes",
+        "numpy"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/core/memory.py": {
+      "standard_library": [
+        "typing",
+        "json",
+        "time",
+        "collections"
+      ],
+      "third_party": [
+        "numpy",
+        "pickle",
+        "hypervector"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/core/operations.py": {
+      "standard_library": [
+        "typing"
+      ],
+      "third_party": [
+        "numpy",
+        "hypervector"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/core/security.py": {
+      "standard_library": [
+        "hashlib",
+        "time",
+        "typing",
+        "dataclasses",
+        "enum",
+        "json",
+        "re"
+      ],
+      "third_party": [
+        "hmac",
+        "secrets",
+        "logging",
+        "numpy",
+        "cryptography.fernet",
+        "cryptography.hazmat.primitives",
+        "cryptography.hazmat.primitives.kdf.pbkdf2",
+        "base64"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/optimization/performance_optimizer.py": {
+      "standard_library": [
+        "time",
+        "threading",
+        "typing",
+        "dataclasses",
+        "collections",
+        "functools",
+        "os",
+        "queue",
+        "sys"
+      ],
+      "third_party": [
+        "multiprocessing",
+        "psutil",
+        "numpy",
+        "concurrent.futures",
+        "pickle",
+        "logging",
+        "core.hypervector",
+        "core.error_handling",
+        "cupy",
+        "numba",
+        "numba"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/research/benchmark_suite.py": {
+      "standard_library": [
+        "typing",
+        "time",
+        "json",
+        "dataclasses",
+        "collections",
+        "pathlib"
+      ],
+      "third_party": [
+        "numpy",
+        "pickle",
+        "logging",
+        "warnings",
+        "matplotlib.pyplot",
+        "seaborn",
+        "scipy",
+        "scipy.stats",
+        "statsmodels.stats.multitest",
+        "pandas",
+        "meta_learning",
+        "quantum_hdc",
+        "neuromorphic_hdc",
+        "core.hypervector",
+        "core.operations",
+        "psutil"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/research/meta_learning.py": {
+      "standard_library": [
+        "typing",
+        "time",
+        "dataclasses",
+        "collections"
+      ],
+      "third_party": [
+        "numpy",
+        "logging",
+        "core.hypervector",
+        "core.operations",
+        "core.memory"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/research/neuromorphic_hdc.py": {
+      "standard_library": [
+        "typing",
+        "time",
+        "dataclasses",
+        "collections",
+        "threading",
+        "queue"
+      ],
+      "third_party": [
+        "numpy",
+        "logging",
+        "scipy.signal",
+        "scipy.sparse",
+        "core.hypervector",
+        "core.operations"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/research/quantum_hdc.py": {
+      "standard_library": [
+        "typing",
+        "time",
+        "dataclasses",
+        "collections"
+      ],
+      "third_party": [
+        "numpy",
+        "cmath",
+        "logging",
+        "scipy.optimize",
+        "scipy.linalg",
+        "core.hypervector",
+        "core.operations",
+        "scipy"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/robustness/error_recovery.py": {
+      "standard_library": [
+        "typing",
+        "time",
+        "threading",
+        "dataclasses",
+        "collections",
+        "enum",
+        "hashlib",
+        "pathlib"
+      ],
+      "third_party": [
+        "numpy",
+        "pickle",
+        "logging",
+        "copy",
+        "core.hypervector",
+        "core.operations",
+        "core.memory",
+        "gc"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/robustness/fault_tolerance.py": {
+      "standard_library": [
+        "typing",
+        "time",
+        "threading",
+        "dataclasses",
+        "collections",
+        "enum"
+      ],
+      "third_party": [
+        "numpy",
+        "logging",
+        "asyncio",
+        "concurrent.futures",
+        "psutil",
+        "core.hypervector",
+        "core.operations",
+        "core.memory"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/scaling/distributed_processing.py": {
+      "standard_library": [
+        "json",
+        "time",
+        "threading",
+        "typing",
+        "dataclasses",
+        "hashlib",
+        "queue",
+        "enum"
+      ],
+      "third_party": [
+        "multiprocessing",
+        "concurrent.futures",
+        "socket",
+        "pickle",
+        "logging",
+        "redis",
+        "numpy",
+        "core.hypervector",
+        "core.error_handling",
+        "core.security"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/scaling/performance_optimizer.py": {
+      "standard_library": [
+        "typing",
+        "time",
+        "threading",
+        "dataclasses",
+        "collections",
+        "enum",
+        "hashlib",
+        "pathlib"
+      ],
+      "third_party": [
+        "numpy",
+        "multiprocessing",
+        "concurrent.futures",
+        "psutil",
+        "logging",
+        "pickle",
+        "gc",
+        "core.hypervector",
+        "core.operations",
+        "cupy",
+        "numba",
+        "numba"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/security/security_framework.py": {
+      "standard_library": [
+        "typing",
+        "time",
+        "hashlib",
+        "json",
+        "dataclasses",
+        "collections",
+        "enum",
+        "pathlib"
+      ],
+      "third_party": [
+        "numpy",
+        "hmac",
+        "secrets",
+        "logging",
+        "jwt",
+        "cryptography.fernet",
+        "cryptography.hazmat.primitives",
+        "cryptography.hazmat.primitives.asymmetric",
+        "cryptography.hazmat.primitives.kdf.pbkdf2",
+        "bcrypt",
+        "ssl",
+        "socket",
+        "core.hypervector",
+        "core.operations"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/advanced_intelligence/multi_modal_fusion.py": {
+      "error": "unexpected character after line continuation character (<unknown>, line 217)"
+    },
+    "hdc_robot_controller/advanced_intelligence/__init__.py": {
+      "standard_library": [],
+      "third_party": [
+        "multi_modal_fusion",
+        "quantum_hdc",
+        "neural_hdc_hybrid",
+        "symbolic_reasoner",
+        "meta_learner"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/advanced_intelligence/neural_hdc_hybrid.py": {
+      "standard_library": [
+        "typing",
+        "dataclasses",
+        "time",
+        "pathlib",
+        "json",
+        "json"
+      ],
+      "third_party": [
+        "numpy",
+        "torch",
+        "torch.nn",
+        "torch.nn.functional",
+        "core.hypervector",
+        "core.operations",
+        "pickle",
+        "pickle"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/advanced_intelligence/quantum_hdc.py": {
+      "error": "unexpected character after line continuation character (<unknown>, line 180)"
+    },
+    "hdc_robot_controller/advanced_intelligence/symbolic_reasoner.py": {
+      "standard_library": [
+        "typing",
+        "dataclasses",
+        "enum",
+        "re",
+        "time",
+        "pathlib",
+        "json"
+      ],
+      "third_party": [
+        "numpy",
+        "core.hypervector",
+        "pickle"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/advanced_intelligence/meta_learner.py": {
+      "standard_library": [
+        "typing",
+        "dataclasses",
+        "collections",
+        "time",
+        "random",
+        "pathlib",
+        "json",
+        "json"
+      ],
+      "third_party": [
+        "numpy",
+        "torch",
+        "torch.nn",
+        "torch.nn.functional",
+        "core.hypervector",
+        "core.operations",
+        "pickle",
+        "pickle"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/autonomous_mastery/self_modifying_code.py": {
+      "standard_library": [
+        "ast",
+        "inspect",
+        "textwrap",
+        "sys",
+        "os",
+        "time",
+        "typing",
+        "dataclasses",
+        "pathlib",
+        "hashlib",
+        "subprocess",
+        "contextlib",
+        "json"
+      ],
+      "third_party": [
+        "importlib",
+        "numpy",
+        "core.hypervector",
+        "cProfile",
+        "pstats",
+        "io",
+        "psutil"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/autonomous_mastery/__init__.py": {
+      "standard_library": [],
+      "third_party": [
+        "self_modifying_code",
+        "adaptive_architecture",
+        "autonomous_evolution",
+        "consciousness_simulator",
+        "reality_interface"
+      ],
+      "local": []
+    },
+    "hdc_robot_controller/autonomous_mastery/adaptive_architecture.py": {
+      "standard_library": [
+        "typing",
+        "dataclasses",
+        "enum",
+        "time",
+        "json",
+        "pathlib",
+        "threading",
+        "queue",
+        "collections"
+      ],
+      "third_party": [
+        "numpy",
+        "torch",
+        "torch.nn",
+        "networkx",
+        "psutil",
+        "core.hypervector"
+      ],
+      "local": []
+    },
+    "research/algorithms/adaptive_hdc.py": {
+      "standard_library": [
+        "typing",
+        "dataclasses",
+        "time",
+        "collections"
+      ],
+      "third_party": [
+        "numpy",
+        "logging",
+        "abc",
+        "statistics",
+        "scipy"
+      ],
+      "local": []
+    },
+    "research/benchmarks/comparative_study.py": {
+      "standard_library": [
+        "time",
+        "json",
+        "typing",
+        "dataclasses",
+        "collections",
+        "threading",
+        "os",
+        "json"
+      ],
+      "third_party": [
+        "numpy",
+        "logging",
+        "statistics",
+        "abc",
+        "multiprocessing",
+        "concurrent.futures"
+      ],
+      "local": []
+    },
+    "research/experiments/reproducible_framework.py": {
+      "standard_library": [
+        "json",
+        "os",
+        "time",
+        "hashlib",
+        "typing",
+        "dataclasses",
+        "pathlib",
+        "random",
+        "collections",
+        "sys"
+      ],
+      "third_party": [
+        "numpy",
+        "logging",
+        "pickle",
+        "statistics",
+        "concurrent.futures",
+        "platform"
+      ],
+      "local": []
+    },
+    "src/hdc_robot_controller/__init__.py": {
+      "standard_library": [],
+      "third_party": [
+        "core.hypervector",
+        "core.operations",
+        "core.memory",
+        "controllers.base",
+        "encoding.multimodal",
+        "learning.behavior",
+        "utils.config"
+      ],
+      "local": []
+    },
+    "src/hdc_robot_controller/core/hypervector.py": {
+      "standard_library": [
+        "typing",
+        "dataclasses",
+        "hashlib"
+      ],
+      "third_party": [
+        "numpy",
+        "numba",
+        "numba",
+        "pickle"
+      ],
+      "local": []
+    },
+    "src/hdc_robot_controller/core/operations.py": {
+      "standard_library": [
+        "typing"
+      ],
+      "third_party": [
+        "numpy",
+        "numba",
+        "numba",
+        "hypervector",
+        "structlog"
+      ],
+      "local": []
+    }
+  },
+  "test_coverage": {
+    "test_hdc_comprehensive.py": {
+      "test_classes": [
+        "TestHyperVector",
+        "TestHDCOperations",
+        "TestAssociativeMemory",
+        "TestErrorHandling",
+        "TestSecurity",
+        "TestPerformance",
+        "TestFaultTolerance",
+        "TestThreadSafety"
+      ],
+      "test_methods": [
+        "TestHyperVector.test_creation",
+        "TestHyperVector.test_random_creation",
+        "TestHyperVector.test_bundling",
+        "TestHyperVector.test_binding",
+        "TestHyperVector.test_similarity",
+        "TestHyperVector.test_permutation",
+        "TestHyperVector.test_serialization",
+        "TestHyperVector.test_error_conditions",
+        "TestHDCOperations.test_majority_bundle",
+        "TestHDCOperations.test_weighted_bundle",
+        "TestHDCOperations.test_similarity_measures",
+        "TestHDCOperations.test_basis_vectors",
+        "TestAssociativeMemory.test_store_and_retrieve",
+        "TestAssociativeMemory.test_query_by_similarity",
+        "TestAssociativeMemory.test_best_match",
+        "TestAssociativeMemory.test_memory_management",
+        "TestAssociativeMemory.test_batch_operations",
+        "TestAssociativeMemory.test_persistence",
+        "TestErrorHandling.test_dimension_validation",
+        "TestErrorHandling.test_hypervector_validation",
+        "TestErrorHandling.test_error_recovery",
+        "TestErrorHandling.test_robust_operation_decorator",
+        "TestSecurity.test_input_sanitization",
+        "TestSecurity.test_access_control",
+        "TestSecurity.test_security_manager_integration",
+        "TestSecurity.test_rate_limiting",
+        "TestPerformance.test_vector_operations_performance",
+        "TestPerformance.test_memory_performance",
+        "TestFaultTolerance.test_noise_resilience",
+        "TestFaultTolerance.test_dimension_robustness",
+        "TestFaultTolerance.test_memory_corruption_recovery",
+        "TestThreadSafety.test_concurrent_memory_access",
+        "TestThreadSafety.test_concurrent_vector_operations",
+        "test_creation",
+        "test_random_creation",
+        "test_bundling",
+        "test_binding",
+        "test_similarity",
+        "test_permutation",
+        "test_serialization",
+        "test_error_conditions",
+        "test_majority_bundle",
+        "test_weighted_bundle",
+        "test_similarity_measures",
+        "test_basis_vectors",
+        "test_store_and_retrieve",
+        "test_query_by_similarity",
+        "test_best_match",
+        "test_memory_management",
+        "test_batch_operations",
+        "test_persistence",
+        "test_dimension_validation",
+        "test_hypervector_validation",
+        "test_error_recovery",
+        "test_robust_operation_decorator",
+        "test_input_sanitization",
+        "test_access_control",
+        "test_security_manager_integration",
+        "test_rate_limiting",
+        "test_vector_operations_performance",
+        "test_memory_performance",
+        "test_noise_resilience",
+        "test_dimension_robustness",
+        "test_memory_corruption_recovery",
+        "test_concurrent_memory_access",
+        "test_concurrent_vector_operations"
+      ],
+      "fixtures": [],
+      "total_test_functions": 66
+    },
+    "test_advanced_intelligence.py": {
+      "test_classes": [
+        "TestMultiModalFusion",
+        "TestQuantumInspiredHDC",
+        "TestNeuralHDCHybrid",
+        "TestAdvancedSymbolicReasoner",
+        "TestMetaLearningEngine",
+        "TestIntegrationScenarios",
+        "TestPerformanceBenchmarks"
+      ],
+      "test_methods": [
+        "TestMultiModalFusion.test_modality_encoding",
+        "TestMultiModalFusion.test_multi_modal_fusion",
+        "TestMultiModalFusion.test_adaptive_weighting",
+        "TestMultiModalFusion.test_context_application",
+        "TestQuantumInspiredHDC.test_quantum_state_creation",
+        "TestQuantumInspiredHDC.test_quantum_operations",
+        "TestQuantumInspiredHDC.test_quantum_similarity",
+        "TestQuantumInspiredHDC.test_quantum_measurement",
+        "TestQuantumInspiredHDC.test_quantum_learning",
+        "TestQuantumInspiredHDC.test_quantum_coherence",
+        "TestNeuralHDCHybrid.test_hybrid_forward_pass",
+        "TestNeuralHDCHybrid.test_association_learning",
+        "TestNeuralHDCHybrid.test_association_retrieval",
+        "TestNeuralHDCHybrid.test_online_adaptation",
+        "TestNeuralHDCHybrid.test_interpretability_analysis",
+        "TestAdvancedSymbolicReasoner.test_concept_creation",
+        "TestAdvancedSymbolicReasoner.test_rule_creation",
+        "TestAdvancedSymbolicReasoner.test_fact_assertion",
+        "TestAdvancedSymbolicReasoner.test_forward_reasoning",
+        "TestAdvancedSymbolicReasoner.test_backward_reasoning",
+        "TestAdvancedSymbolicReasoner.test_uncertainty_handling",
+        "TestAdvancedSymbolicReasoner.test_explanation_generation",
+        "TestMetaLearningEngine.test_task_creation",
+        "TestMetaLearningEngine.test_episode_creation",
+        "TestMetaLearningEngine.test_fast_adaptation",
+        "TestMetaLearningEngine.test_similar_task_finding",
+        "TestMetaLearningEngine.test_performance_tracking",
+        "TestIntegrationScenarios.test_multi_modal_symbolic_reasoning",
+        "TestIntegrationScenarios.test_quantum_neural_hybrid",
+        "TestIntegrationScenarios.test_meta_learning_with_quantum_hdc",
+        "TestPerformanceBenchmarks.test_fusion_latency",
+        "TestPerformanceBenchmarks.test_quantum_operation_speed",
+        "TestPerformanceBenchmarks.test_reasoning_speed",
+        "test_modality_encoding",
+        "test_multi_modal_fusion",
+        "test_adaptive_weighting",
+        "test_context_application",
+        "test_quantum_state_creation",
+        "test_quantum_operations",
+        "test_quantum_similarity",
+        "test_quantum_measurement",
+        "test_quantum_learning",
+        "test_quantum_coherence",
+        "test_hybrid_forward_pass",
+        "test_association_learning",
+        "test_association_retrieval",
+        "test_online_adaptation",
+        "test_interpretability_analysis",
+        "test_concept_creation",
+        "test_rule_creation",
+        "test_fact_assertion",
+        "test_forward_reasoning",
+        "test_backward_reasoning",
+        "test_uncertainty_handling",
+        "test_explanation_generation",
+        "test_task_creation",
+        "test_episode_creation",
+        "test_fast_adaptation",
+        "test_similar_task_finding",
+        "test_performance_tracking",
+        "test_multi_modal_symbolic_reasoning",
+        "test_quantum_neural_hybrid",
+        "test_meta_learning_with_quantum_hdc",
+        "test_fusion_latency",
+        "test_quantum_operation_speed",
+        "test_reasoning_speed"
+      ],
+      "fixtures": [
+        "fusion_engine",
+        "quantum_hdc",
+        "hybrid_model",
+        "reasoner",
+        "meta_learner"
+      ],
+      "total_test_functions": 66
+    },
+    "test_autonomous_mastery.py": {
+      "error": "unexpected character after line continuation character (<unknown>, line 46)"
+    }
+  },
+  "performance_analysis": {
+    "multi_modal_fusion": {
+      "error": "unexpected character after line continuation character (<unknown>, line 217)"
+    },
+    "quantum_hdc": {
+      "error": "unexpected character after line continuation character (<unknown>, line 180)"
+    },
+    "self_modifying_code": {
+      "nested_loop_count": 5,
+      "recursive_functions": 1,
+      "large_data_structures": [],
+      "optimization_indicators": [
+        "vectorization",
+        "parallel",
+        "multiprocessing",
+        "cache",
+        "lru_cache",
+        "optimize",
+        "performance"
+      ],
+      "memory_usage_indicators": [
+        "memory_usage",
+        "memory_delta",
+        "psutil.Process",
+        "memory_info"
+      ]
+    }
+  },
+  "summary_statistics": {
+    "file_completeness": {
+      "total_expected_files": 17,
+      "existing_files": 17,
+      "completeness_percentage": 100.0
+    },
+    "syntax_quality": {
+      "total_python_files": 48,
+      "syntactically_valid_files": 45,
+      "syntax_success_rate": 93.75
+    },
+    "code_metrics": {
+      "total_functions": 87,
+      "total_classes": 19,
+      "total_lines_of_code": 2191,
+      "average_doc_ratio": 0.1159705218111879
+    },
+    "test_metrics": {
+      "total_test_files": 3,
+      "total_test_functions": 132,
+      "total_test_classes": 15
+    },
+    "performance_metrics": {
+      "algorithms_analyzed": 1,
+      "optimization_patterns_detected": 7
+    }
+  }
+}

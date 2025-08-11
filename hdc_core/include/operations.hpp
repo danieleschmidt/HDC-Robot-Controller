@@ -62,6 +62,13 @@ public:
     static double euclidean_distance(const HyperVector& a, const HyperVector& b);
     static double manhattan_distance(const HyperVector& a, const HyperVector& b);
     static double chebyshev_distance(const HyperVector& a, const HyperVector& b);
+    
+    // SIMD-optimized operations for performance enhancement
+    static HyperVector simd_bundle_vectors(const std::vector<HyperVector>& vectors);
+    static double simd_cosine_similarity(const HyperVector& a, const HyperVector& b);
+    
+    // Parallel processing operations for scalability
+    static HyperVector parallel_bundle(const std::vector<HyperVector>& vectors, int num_threads = 4);
 };
 
 /**

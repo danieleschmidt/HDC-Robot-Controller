@@ -4,10 +4,23 @@
 #include <random>
 #include <cmath>
 #include <unordered_map>
+#include <immintrin.h>  // AVX/SIMD support
+#include <thread>
+#include <future>
+#include <execution>
 
 namespace hdc {
 
 HyperVector Operations::majority_bundle(const std::vector<HyperVector>& vectors) {
+    if (vectors.empty()) {
+        throw std::invalid_argument("Cannot bundle empty vector set");
+    }
+    
+    // Use SIMD-optimized bundling for large vector sets
+    if (vectors.size() > 8 && vectors[0].dimension() % 8 == 0) {
+        return simd_bundle_vectors(vectors);
+    }
+    
     return HyperVector::bundle_vectors(vectors);
 }
 
@@ -54,7 +67,16 @@ HyperVector Operations::right_rotate(const HyperVector& v, int positions) {
 }
 
 double Operations::cosine_similarity(const HyperVector& a, const HyperVector& b) {
-    return a.similarity(b); // Already implements normalized dot product
+    if (a.dimension() != b.dimension()) {
+        throw std::invalid_argument("Vector dimensions must match");
+    }
+    
+    // Use SIMD-accelerated similarity for large vectors
+    if (a.dimension() >= 1024 && a.dimension() % 8 == 0) {
+        return simd_cosine_similarity(a, b);
+    }
+    
+    return a.similarity(b);
 }
 
 double Operations::hamming_similarity(const HyperVector& a, const HyperVector& b) {
@@ -417,5 +439,188 @@ HyperVector BasisVectors::encode_quaternion(double w, double x, double y, double
     // Bind with permutations to differentiate components
     return w_vec.bind(x_vec.permute(1)).bind(y_vec.permute(2)).bind(z_vec.permute(3));
 }
+
+// SIMD-optimized operations for performance enhancement
+HyperVector Operations::simd_bundle_vectors(const std::vector<HyperVector>& vectors) {
+    if (vectors.empty()) {
+        throw std::invalid_argument("Cannot bundle empty vector set");
+    }
+    
+    const int dim = vectors[0].dimension();
+    const int simd_width = 8; // AVX uses 8 32-bit integers
+    const int simd_iterations = dim / simd_width;
+    
+    HyperVector result(dim);
+    std::vector<int32_t> sums(dim, 0);
+    
+    // SIMD bundling for aligned portions
+    for (int v = 0; v < vectors.size(); ++v) {
+        const auto& vec_data = vectors[v].data();
+        
+        #pragma omp simd
+        for (int i = 0; i < simd_iterations; ++i) {
+            __m256i vec_chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(&vec_data[i * simd_width]));
+            __m256i sum_chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(&sums[i * simd_width]));
+            __m256i result_chunk = _mm256_add_epi32(vec_chunk, sum_chunk);
+            _mm256_storeu_si256(reinterpret_cast<__m256i*>(&sums[i * simd_width]), result_chunk);
+        }
+        
+        // Handle remaining elements
+        for (int i = simd_iterations * simd_width; i < dim; ++i) {
+            sums[i] += vec_data[i];
+        }
+    }
+    
+    // Apply majority rule with SIMD
+    const int threshold = vectors.size() / 2;
+    auto result_data = result.data_mutable();
+    
+    #pragma omp simd
+    for (int i = 0; i < simd_iterations; ++i) {
+        __m256i sum_chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(&sums[i * simd_width]));
+        __m256i thresh_vec = _mm256_set1_epi32(threshold);
+        __m256i mask = _mm256_cmpgt_epi32(sum_chunk, thresh_vec);
+        __m256i ones = _mm256_set1_epi32(1);
+        __m256i neg_ones = _mm256_set1_epi32(-1);
+        __m256i result_chunk = _mm256_blendv_epi8(neg_ones, ones, mask);
+        _mm256_storeu_si256(reinterpret_cast<__m256i*>(&result_data[i * simd_width]), result_chunk);
+    }
+    
+    // Handle remaining elements
+    for (int i = simd_iterations * simd_width; i < dim; ++i) {
+        result_data[i] = (sums[i] > threshold) ? 1 : -1;
+    }
+    
+    return result;
+}
+
+double Operations::simd_cosine_similarity(const HyperVector& a, const HyperVector& b) {
+    const int dim = a.dimension();
+    const int simd_width = 8;
+    const int simd_iterations = dim / simd_width;
+    
+    const auto& a_data = a.data();
+    const auto& b_data = b.data();
+    
+    __m256 dot_product = _mm256_setzero_ps();
+    __m256 norm_a = _mm256_setzero_ps();
+    __m256 norm_b = _mm256_setzero_ps();
+    
+    // SIMD dot product computation
+    for (int i = 0; i < simd_iterations; ++i) {
+        __m256 a_chunk = _mm256_cvtepi32_ps(_mm256_loadu_si256(reinterpret_cast<const __m256i*>(&a_data[i * simd_width])));
+        __m256 b_chunk = _mm256_cvtepi32_ps(_mm256_loadu_si256(reinterpret_cast<const __m256i*>(&b_data[i * simd_width])));
+        
+        dot_product = _mm256_fmadd_ps(a_chunk, b_chunk, dot_product);
+        norm_a = _mm256_fmadd_ps(a_chunk, a_chunk, norm_a);
+        norm_b = _mm256_fmadd_ps(b_chunk, b_chunk, norm_b);
+    }
+    
+    // Horizontal sum using SIMD
+    float dot_sum = 0.0f, norm_a_sum = 0.0f, norm_b_sum = 0.0f;\n    \n    float dot_array[8], norm_a_array[8], norm_b_array[8];
+    _mm256_storeu_ps(dot_array, dot_product);
+    _mm256_storeu_ps(norm_a_array, norm_a);
+    _mm256_storeu_ps(norm_b_array, norm_b);
+    \n    for (int i = 0; i < 8; ++i) {
+        dot_sum += dot_array[i];
+        norm_a_sum += norm_a_array[i];
+        norm_b_sum += norm_b_array[i];
+    }
+    
+    // Handle remaining elements
+    for (int i = simd_iterations * simd_width; i < dim; ++i) {
+        dot_sum += a_data[i] * b_data[i];
+        norm_a_sum += a_data[i] * a_data[i];
+        norm_b_sum += b_data[i] * b_data[i];
+    }
+    
+    double norm_product = std::sqrt(norm_a_sum) * std::sqrt(norm_b_sum);
+    return norm_product > 0.0 ? dot_sum / norm_product : 0.0;
+}
+
+// Parallel processing operations for large-scale HDC
+HyperVector Operations::parallel_bundle(const std::vector<HyperVector>& vectors, int num_threads) {
+    if (vectors.empty()) {
+        throw std::invalid_argument("Cannot bundle empty vector set");
+    }
+    
+    const int dim = vectors[0].dimension();
+    const int chunk_size = std::max(1, static_cast<int>(vectors.size()) / num_threads);
+    
+    std::vector<std::future<std::vector<int>>> futures;
+    
+    for (int t = 0; t < num_threads; ++t) {
+        int start_idx = t * chunk_size;
+        int end_idx = std::min(start_idx + chunk_size, static_cast<int>(vectors.size()));
+        
+        if (start_idx >= vectors.size()) break;
+        
+        futures.emplace_back(std::async(std::launch::async, [&vectors, start_idx, end_idx, dim]() {
+            std::vector<int> local_sums(dim, 0);
+            for (int v = start_idx; v < end_idx; ++v) {
+                const auto& vec_data = vectors[v].data();
+                for (int i = 0; i < dim; ++i) {
+                    local_sums[i] += vec_data[i];
+                }
+            }
+            return local_sums;
+        }));
+    }
+    
+    // Combine results from all threads
+    std::vector<int> total_sums(dim, 0);
+    for (auto& future : futures) {
+        auto local_sums = future.get();
+        for (int i = 0; i < dim; ++i) {
+            total_sums[i] += local_sums[i];
+        }
+    }
+    
+    // Apply majority rule
+    const int threshold = vectors.size() / 2;
+    HyperVector result(dim);
+    auto result_data = result.data_mutable();
+    
+    std::transform(std::execution::par_unseq, total_sums.begin(), total_sums.end(), 
+                   result_data, [threshold](int sum) { return sum > threshold ? 1 : -1; });
+    
+    return result;
+}
+
+// Memory-efficient operations for large hypervectors
+class HDCMemoryPool {
+private:
+    static constexpr size_t POOL_SIZE = 1024 * 1024 * 10; // 10MB pool
+    static std::unique_ptr<int32_t[]> memory_pool_;
+    static std::atomic<size_t> pool_offset_;
+    static std::mutex pool_mutex_;
+    
+public:
+    static int32_t* allocate(size_t size) {
+        std::lock_guard<std::mutex> lock(pool_mutex_);
+        size_t current_offset = pool_offset_.load();
+        
+        if (current_offset + size > POOL_SIZE) {
+            pool_offset_ = 0; // Reset pool (simple circular buffer)
+            current_offset = 0;
+        }
+        
+        if (!memory_pool_) {
+            memory_pool_ = std::make_unique<int32_t[]>(POOL_SIZE);
+        }
+        
+        pool_offset_ += size;
+        return &memory_pool_[current_offset];
+    }
+    
+    static void reset() {
+        std::lock_guard<std::mutex> lock(pool_mutex_);
+        pool_offset_ = 0;
+    }
+};
+
+std::unique_ptr<int32_t[]> HDCMemoryPool::memory_pool_;
+std::atomic<size_t> HDCMemoryPool::pool_offset_{0};
+std::mutex HDCMemoryPool::pool_mutex_;
 
 } // namespace hdc

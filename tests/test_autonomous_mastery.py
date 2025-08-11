@@ -43,13 +43,13 @@ class TestSelfModifyingCode:
     def sample_function(self):
         """Sample function for testing."""
         def simple_sum(a, b):
-            \"\"\"Simple sum function for testing.\"\"\"
+            """Simple sum function for testing."""
             result = a + b
             return result
         return simple_sum
     
     def test_function_registration(self, code_engine, sample_function):
-        \"\"\"Test function registration for modification.\"\"\"
+        """Test function registration for modification."""
         fragment_id = code_engine.register_function(sample_function)
         
         assert fragment_id in code_engine.code_fragments

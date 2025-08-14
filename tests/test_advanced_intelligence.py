@@ -8,7 +8,16 @@ and meta-learning systems.
 
 import pytest
 import numpy as np
-import torch
+try:
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    torch = None
+    nn = None
+    F = None
 import time
 from pathlib import Path
 

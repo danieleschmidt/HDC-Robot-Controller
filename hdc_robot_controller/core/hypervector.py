@@ -138,7 +138,8 @@ class HyperVector:
         if self.dimension != other.dimension:
             raise ValueError("Dimensions must match for similarity")
         
-        dot_product = np.dot(self.data, other.data)
+        # Use int32 to prevent overflow with large dimensions
+        dot_product = np.dot(self.data.astype(np.int32), other.data.astype(np.int32))
         return float(dot_product) / self.dimension
     
     def hamming_distance(self, other: 'HyperVector') -> float:

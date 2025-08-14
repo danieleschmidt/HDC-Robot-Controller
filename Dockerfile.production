@@ -1,0 +1,153 @@
+# Multi-stage production Dockerfile for HDC Robot Controller
+# Optimized for robotics environments with CUDA support
+
+FROM nvidia/cuda:12.0-devel-ubuntu22.04 as cuda-base
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    wget \
+    libopencv-dev \
+    libeigen3-dev \
+    libboost-all-dev \
+    libyaml-cpp-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
+
+# Install CUDA-specific packages
+RUN pip3 install --no-cache-dir \
+    cupy-cuda12x \
+    numba[cuda]
+
+FROM cuda-base as builder
+
+# Set work directory
+WORKDIR /app
+
+# Copy source code
+COPY . .
+
+# Build C++ extensions
+RUN mkdir -p build && cd build && \
+    cmake .. && \
+    make -j$(nproc)
+
+FROM cuda-base as production
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    python3-numpy \
+    python3-scipy \
+    python3-opencv \
+    python3-sklearn \
+    python3-matplotlib \
+    python3-psutil \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create application user
+RUN groupadd -r hdcuser && useradd -r -g hdcuser hdcuser
+
+# Set work directory
+WORKDIR /app
+
+# Copy built application
+COPY --from=builder /app /app
+COPY --chown=hdcuser:hdcuser . .
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/data /app/config && \
+    chown -R hdcuser:hdcuser /app
+
+# Install the package
+RUN pip3 install -e .
+
+# Create health check script
+RUN echo '#!/usr/bin/env python3\n\
+import sys\n\
+import requests\n\
+try:\n\
+    response = requests.get("http://localhost:8080/health", timeout=5)\n\
+    if response.status_code == 200:\n\
+        sys.exit(0)\n\
+    else:\n\
+        sys.exit(1)\n\
+except Exception:\n\
+    sys.exit(1)\n' > /app/healthcheck.py && \
+    chmod +x /app/healthcheck.py
+
+# Switch to application user
+USER hdcuser
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV HDC_LOG_LEVEL=INFO
+ENV HDC_DIMENSION=10000
+ENV HDC_ENABLE_GPU=true
+ENV HDC_ENABLE_MONITORING=true
+
+# Expose ports
+EXPOSE 8080 8888 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD python3 /app/healthcheck.py
+
+# Default command
+CMD ["python3", "-m", "hdc_robot_controller.main"]
+
+# Alternative CPU-only build
+FROM ubuntu:22.04 as cpu-production
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    python3-numpy \
+    python3-scipy \
+    python3-opencv \
+    python3-sklearn \
+    python3-matplotlib \
+    python3-psutil \
+    build-essential \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create application user
+RUN groupadd -r hdcuser && useradd -r -g hdcuser hdcuser
+
+WORKDIR /app
+
+# Copy application
+COPY --chown=hdcuser:hdcuser . .
+
+# Install requirements
+RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install -e .
+
+# Create directories
+RUN mkdir -p /app/logs /app/data /app/config && \
+    chown -R hdcuser:hdcuser /app
+
+USER hdcuser
+
+ENV PYTHONPATH=/app
+ENV HDC_LOG_LEVEL=INFO
+ENV HDC_DIMENSION=10000
+ENV HDC_ENABLE_GPU=false
+ENV HDC_ENABLE_MONITORING=true
+
+EXPOSE 8080 8888 3000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD python3 -c "import requests; requests.get('http://localhost:8080/health')"
+
+CMD ["python3", "-m", "hdc_robot_controller.main"]

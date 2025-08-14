@@ -61,8 +61,8 @@ class TestSelfModifyingCode:
         assert fragment.generation == 0
         
     def test_ast_analysis(self, code_engine):
-        \"\"\"Test AST analysis capabilities.\"\"\"
-        code = \"\"\"
+        """Test AST analysis capabilities."""
+        code = """
 def test_function(x, y):
     result = 0
     for i in range(x):
@@ -71,7 +71,7 @@ def test_function(x, y):
         else:
             result -= i
     return result
-\"\"\"
+"""
         
         analyzer = code_engine.ast_analyzer
         complexity = analyzer.analyze_complexity(code)
@@ -86,14 +86,14 @@ def test_function(x, y):
         assert len(candidates) >= 0  # May or may not find candidates
         
     def test_mutation_generation(self, code_engine):
-        \"\"\"Test code mutation generation.\"\"\"
-        code = \"\"\"
+        """Test code mutation generation."""
+        code = """
 def loop_function(n):
     result = []
     for i in range(n):
         result.append(i * 2)
     return result
-\"\"\"
+"""
         
         analyzer = code_engine.ast_analyzer
         mutations = analyzer.generate_mutations(code)

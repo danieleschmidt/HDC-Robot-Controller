@@ -23,6 +23,7 @@ class AssociativeMemory:
         self.dimension = dimension
         self.similarity_threshold = similarity_threshold
         self.memory: Dict[str, Dict[str, Any]] = {}
+        self.memory_ = self.memory  # Alias for backward compatibility
     
     def store(self, label: str, vector: HyperVector, confidence: float = 1.0) -> None:
         """Store a hypervector with label and confidence."""
@@ -61,7 +62,7 @@ class AssociativeMemory:
         else:
             self.store(label, vector, 0.5)
     
-    def query(self, query_vector: HyperVector, max_results: int = 10) -> List[Dict[str, Any]]:
+    def query(self, query_vector: HyperVector, max_results: int = 10, min_similarity: float = -1.0) -> List[Dict[str, Any]]:
         """Query memory for similar vectors."""
         if query_vector.dimension != self.dimension:
             raise ValueError("Query vector dimension mismatch")
@@ -71,16 +72,29 @@ class AssociativeMemory:
         results = []
         for label, entry in self.memory.items():
             similarity = query_vector.similarity(entry['vector'])
-            results.append({
-                'label': label,
-                'vector': entry['vector'],
-                'similarity': similarity,
-                'confidence': entry['confidence']
-            })
+            # Create an object-like dict for compatibility
+            class QueryResult(dict):
+                def __init__(self, **kwargs):
+                    super().__init__(**kwargs)
+                    for k, v in kwargs.items():
+                        setattr(self, k, v)
+            
+            result = QueryResult(
+                label=label,
+                key=label,  # Add key alias for compatibility
+                vector=entry['vector'],
+                similarity=similarity,
+                confidence=entry['confidence']
+            )
+            results.append(result)
             
             # Update access statistics
             entry['access_count'] += 1
             entry['last_access'] = time.time()
+        
+        # Filter by minimum similarity
+        if min_similarity > -1.0:
+            results = [r for r in results if r['similarity'] >= min_similarity]
         
         # Sort by similarity
         results.sort(key=lambda x: x['similarity'], reverse=True)
@@ -119,6 +133,30 @@ class AssociativeMemory:
     def get_labels(self) -> List[str]:
         """Get all labels."""
         return list(self.memory.keys())
+    
+    def retrieve(self, label: str) -> HyperVector:
+        """Retrieve vector by label."""
+        if label not in self.memory:
+            raise ValueError(f"Label '{label}' not found")
+        return self.memory[label]['vector']
+    
+    def best_match(self, query_vector: HyperVector) -> HyperVector:
+        """Get best matching vector."""
+        best_entry = self.query_best(query_vector)
+        return best_entry['vector']
+    
+    def batch_store(self, vectors: Dict[str, HyperVector]) -> None:
+        """Store multiple vectors at once."""
+        for label, vector in vectors.items():
+            self.store(label, vector)
+    
+    def batch_retrieve(self, labels: List[str]) -> Dict[str, HyperVector]:
+        """Retrieve multiple vectors by labels."""
+        result = {}
+        for label in labels:
+            if label in self.memory:
+                result[label] = self.memory[label]['vector']
+        return result
     
     def get_confidence(self, label: str) -> float:
         """Get confidence for label."""

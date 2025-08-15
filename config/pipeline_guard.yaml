@@ -1,0 +1,193 @@
+# Pipeline Guard Configuration
+# Self-Healing CI/CD Pipeline Monitoring System
+
+# Core system configuration
+core:
+  hdc_dimension: 10000                    # HDC vector dimension for pattern recognition
+  enable_auto_repair: true                # Enable automatic repair mechanisms
+  enable_predictive_analysis: true        # Enable failure prediction
+  enable_gpu: false                       # Enable GPU acceleration (requires CUDA)
+  
+# Monitoring configuration
+monitoring:
+  interval_seconds: 30                    # Metrics collection interval
+  collection_timeout: 30                  # Timeout for metric collection
+  max_collection_errors: 5                # Max errors before backoff
+  metrics_retention_hours: 168            # Metrics retention (1 week)
+  
+# Health and alerting thresholds
+thresholds:
+  health_score_warning: 0.7               # Warning threshold for health score
+  health_score_critical: 0.5              # Critical threshold for health score
+  error_rate_warning: 0.05                # Warning threshold for error rate (5%)
+  error_rate_critical: 0.15               # Critical threshold for error rate (15%)
+  performance_degradation_threshold: 0.3  # Performance degradation threshold (30%)
+  
+# Automated repair configuration
+auto_repair:
+  enabled: true                           # Enable auto-repair
+  max_attempts: 3                         # Max repair attempts per issue
+  cooldown_minutes: 10                    # Cooldown between repair attempts
+  escalation_enabled: true                # Enable escalation to humans
+  parallel_repairs: false                 # Allow parallel repairs
+  require_confirmation: false             # Require human confirmation
+
+# Security configuration
+security:
+  enabled: true                           # Enable security framework
+  audit_log_file: "/app/logs/security.log" # Security audit log location
+  auto_block_threshold: 10                # Auto-block after N violations
+  block_duration_minutes: 60              # IP block duration
+  
+  # Rate limiting
+  rate_limit:
+    requests_per_minute: 60               # Max requests per minute per IP
+    requests_per_hour: 1000               # Max requests per hour per IP
+  
+  # Session management
+  session_timeout: 3600                   # Session timeout in seconds (1 hour)
+  max_failed_attempts: 5                  # Max failed login attempts
+  lockout_duration: 900                   # Account lockout duration (15 minutes)
+
+# Dashboard and API configuration
+dashboard:
+  enabled: true                           # Enable web dashboard
+  host: "0.0.0.0"                        # Dashboard host
+  port: 8080                              # Dashboard port
+  update_interval: 5                      # Real-time update interval (seconds)
+  
+# Notification configuration
+notifications:
+  email_enabled: false                    # Enable email notifications
+  slack_enabled: false                    # Enable Slack notifications
+  webhook_enabled: false                  # Enable webhook notifications
+  
+  # Email settings (if enabled)
+  email:
+    smtp_server: "smtp.company.com"
+    smtp_port: 587
+    username: "alerts@company.com"
+    password: "${EMAIL_PASSWORD}"
+    recipients:
+      - "team@company.com"
+      - "oncall@company.com"
+  
+  # Slack settings (if enabled)
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#alerts"
+    username: "Pipeline Guard"
+  
+  # Webhook settings (if enabled)  
+  webhook:
+    url: "https://api.company.com/alerts"
+    method: "POST"
+    headers:
+      Authorization: "Bearer ${WEBHOOK_TOKEN}"
+
+# Internationalization
+i18n:
+  default_language: "en"                  # Default language (en, es, fr, de, ja, zh-cn)
+  default_region: "na"                    # Default region (na, eu, apac, latam, me)
+  formal_address: true                    # Use formal addressing in notifications
+
+# Compliance configuration
+compliance:
+  region: "na"                            # Regulatory region (eu, na, apac)
+  data_retention_days: 365                # Data retention period
+  audit_logging: true                     # Enable comprehensive audit logging
+  gdpr_compliance: false                  # Enable GDPR-specific features
+  
+# Logging configuration
+logging:
+  level: "INFO"                           # Log level (DEBUG, INFO, WARNING, ERROR)
+  file: "/app/logs/pipeline_guard.log"    # Main log file
+  max_size_mb: 100                        # Max log file size before rotation
+  backup_count: 5                         # Number of backup log files
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Database configuration (optional)
+database:
+  enabled: false                          # Enable persistent database storage
+  url: "${DATABASE_URL}"                  # Database connection URL
+  pool_size: 5                            # Connection pool size
+  
+# Redis configuration (optional)
+redis:
+  enabled: false                          # Enable Redis for caching/sessions
+  url: "${REDIS_URL}"                     # Redis connection URL
+  
+# External integrations
+integrations:
+  jenkins:
+    enabled: false                        # Enable Jenkins integration
+    url: "${JENKINS_URL}"
+    username: "${JENKINS_USERNAME}"
+    token: "${JENKINS_TOKEN}"
+    
+  gitlab:
+    enabled: false                        # Enable GitLab integration
+    url: "${GITLAB_URL}"
+    token: "${GITLAB_TOKEN}"
+    
+  github:
+    enabled: false                        # Enable GitHub Actions integration
+    token: "${GITHUB_TOKEN}"
+    
+  azure_devops:
+    enabled: false                        # Enable Azure DevOps integration
+    organization: "${AZURE_ORG}"
+    token: "${AZURE_TOKEN}"
+
+# Pipeline definitions
+pipelines:
+  # Example pipeline configurations
+  # Uncomment and modify as needed
+  
+  # web-app-ci:
+  #   expected_duration: 480              # Expected duration in seconds (8 minutes)
+  #   success_rate: 0.94                  # Expected success rate
+  #   critical: false                     # Is this pipeline critical?
+  #   alert_email: "team@company.com"     # Override alert email
+  #   custom_thresholds:
+  #     error_rate_warning: 0.03          # Custom error rate warning
+  #     performance_degradation: 0.25     # Custom performance threshold
+  
+  # api-service-cd:
+  #   expected_duration: 720              # 12 minutes
+  #   success_rate: 0.97
+  #   critical: true                      # Critical pipeline
+  #   alert_email: "oncall@company.com"
+  #   repair_strategies:
+  #     - "restart_service"
+  #     - "rollback_deployment"
+  
+  # data-pipeline:
+  #   expected_duration: 1800             # 30 minutes
+  #   success_rate: 0.92
+  #   critical: false
+  #   custom_metrics:
+  #     - name: "data_quality_score"
+  #       threshold: 0.95
+  #     - name: "processing_throughput"
+  #       threshold: 1000
+
+# Advanced configuration
+advanced:
+  # HDC-specific settings
+  hdc:
+    similarity_threshold: 0.8             # Pattern similarity threshold
+    pattern_memory_size: 1000             # Max patterns to remember
+    learning_rate: 0.1                    # Learning rate for adaptation
+    
+  # Performance tuning
+  performance:
+    max_workers: 4                        # Max worker threads
+    queue_size: 1000                      # Max queue size
+    batch_size: 50                        # Processing batch size
+    
+  # Feature flags
+  features:
+    experimental_detection: false         # Enable experimental detection methods
+    advanced_analytics: true              # Enable advanced analytics
+    machine_learning: false               # Enable ML-based predictions

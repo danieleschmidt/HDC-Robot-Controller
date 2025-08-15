@@ -1,0 +1,173 @@
+version: '3.8'
+
+services:
+  pipeline-guard:
+    build:
+      context: .
+      dockerfile: Dockerfile.pipeline-guard
+    container_name: pipeline-guard
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "8888:8888"  # Distributed coordinator port
+    environment:
+      # Core configuration
+      HDC_DIMENSION: "10000"
+      HDC_LOG_LEVEL: "INFO"
+      HDC_ENABLE_GPU: "false"  # Set to true if GPU available
+      HDC_ENABLE_MONITORING: "true"
+      
+      # Service configuration
+      HDC_COORDINATOR_PORT: "8888"
+      HDC_HEALTH_CHECK_PORT: "8080"
+      HDC_LOG_FILE: "/app/logs/pipeline_guard.log"
+      
+      # Security
+      PIPELINE_GUARD_SECRET_KEY: "${PIPELINE_GUARD_SECRET_KEY:-default-secret-key-change-in-production}"
+      PIPELINE_GUARD_ENCRYPTION_KEY: "${PIPELINE_GUARD_ENCRYPTION_KEY:-}"
+      
+      # Database (optional)
+      DATABASE_URL: "${DATABASE_URL:-}"
+      REDIS_URL: "${REDIS_URL:-redis://redis:6379/0}"
+      
+      # External integrations
+      JENKINS_URL: "${JENKINS_URL:-}"
+      JENKINS_USERNAME: "${JENKINS_USERNAME:-}"
+      JENKINS_TOKEN: "${JENKINS_TOKEN:-}"
+      GITLAB_URL: "${GITLAB_URL:-}"
+      GITLAB_TOKEN: "${GITLAB_TOKEN:-}"
+      GITHUB_TOKEN: "${GITHUB_TOKEN:-}"
+      
+      # Notifications
+      SLACK_WEBHOOK_URL: "${SLACK_WEBHOOK_URL:-}"
+      EMAIL_SMTP_SERVER: "${EMAIL_SMTP_SERVER:-}"
+      EMAIL_SMTP_PORT: "${EMAIL_SMTP_PORT:-587}"
+      EMAIL_USERNAME: "${EMAIL_USERNAME:-}"
+      EMAIL_PASSWORD: "${EMAIL_PASSWORD:-}"
+      
+      # Localization
+      DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE:-en}"
+      DEFAULT_REGION: "${DEFAULT_REGION:-na}"
+      
+    volumes:
+      - pipeline-guard-logs:/app/logs
+      - pipeline-guard-data:/app/data
+      - pipeline-guard-config:/app/config
+      - ./config/pipeline_guard.yaml:/app/config/pipeline_guard.yaml:ro
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - pipeline-guard-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  redis:
+    image: redis:7-alpine
+    container_name: pipeline-guard-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - pipeline-guard-network
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: pipeline-guard-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: pipeline_guard
+      POSTGRES_USER: pipeline_guard
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pipeline_guard_password}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - pipeline-guard-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: pipeline-guard-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - pipeline-guard-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pipeline-guard-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - pipeline-guard-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: pipeline-guard-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      - pipeline-guard
+      - grafana
+    networks:
+      - pipeline-guard-network
+
+volumes:
+  pipeline-guard-logs:
+    driver: local
+  pipeline-guard-data:
+    driver: local
+  pipeline-guard-config:
+    driver: local
+  redis-data:
+    driver: local
+  postgres-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  nginx-logs:
+    driver: local
+
+networks:
+  pipeline-guard-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

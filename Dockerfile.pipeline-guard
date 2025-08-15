@@ -1,0 +1,116 @@
+# Multi-stage Dockerfile for Pipeline Guard
+# Optimized for production deployment with security and performance
+
+# Build stage
+FROM python:3.11-slim as builder
+
+# Set build arguments
+ARG BUILD_DATE
+ARG VERSION
+ARG VCS_REF
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt .
+COPY requirements-prod.txt .
+
+# Create virtual environment and install dependencies
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python dependencies
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements-prod.txt
+
+# Production stage
+FROM python:3.11-slim as production
+
+# Set labels for metadata
+LABEL maintainer="Terragon Labs <support@terragon-labs.com>"
+LABEL version="${VERSION:-latest}"
+LABEL description="Self-Healing Pipeline Guard - Enterprise CI/CD Monitoring"
+LABEL build-date="${BUILD_DATE}"
+LABEL vcs-ref="${VCS_REF}"
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    dumb-init \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r pipelineguard \
+    && useradd -r -g pipelineguard -d /app -s /sbin/nologin pipelineguard
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Set working directory
+WORKDIR /app
+
+# Copy application code
+COPY --chown=pipelineguard:pipelineguard . .
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/data /app/config /app/translations \
+    && chown -R pipelineguard:pipelineguard /app
+
+# Set environment variables
+ENV PYTHONPATH="/app:$PYTHONPATH"
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV HDC_LOG_FILE="/app/logs/pipeline_guard.log"
+ENV HDC_DATA_DIR="/app/data"
+ENV HDC_CONFIG_DIR="/app/config"
+
+# Expose ports
+EXPOSE 8080 8888
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Switch to non-root user
+USER pipelineguard
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+# Default command
+CMD ["python", "-m", "pipeline_guard.main"]
+
+# Development stage (for development/testing)
+FROM production as development
+
+# Switch back to root for development setup
+USER root
+
+# Install development dependencies
+COPY requirements-dev.txt .
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+# Install debugging tools
+RUN apt-get update && apt-get install -y \
+    vim \
+    htop \
+    strace \
+    tcpdump \
+    && rm -rf /var/lib/apt/lists/*
+
+# Switch back to app user
+USER pipelineguard
+
+# Override entrypoint for development
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["python", "-m", "pipeline_guard.main", "--debug"]

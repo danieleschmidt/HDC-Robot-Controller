@@ -318,4 +318,4 @@ class QuantumInspiredHDC:
         if use_interference:
             self.quantum_metrics['interference_patterns'] += 1
             
-        return quantum_result"
+        return quantum_result

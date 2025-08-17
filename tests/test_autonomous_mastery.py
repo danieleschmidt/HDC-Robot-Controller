@@ -107,7 +107,7 @@ def loop_function(n):
             assert mutation.expected_improvement >= 0.0
     
     def test_performance_profiling(self, code_engine, sample_function):
-        \"\"\"Test performance profiling.\"\"\"
+        """Test performance profiling."""
         profiler = code_engine.profiler
         
         # Profile the sample function
@@ -120,7 +120,7 @@ def loop_function(n):
         assert metrics['execution_time'] >= 0
     
     def test_code_evolution(self, code_engine, sample_function):
-        \"\"\"Test code evolution process.\"\"\"
+        """Test code evolution process."""
         fragment_id = code_engine.register_function(sample_function)
         
         # Create test inputs
@@ -139,13 +139,13 @@ def loop_function(n):
         assert len(evolution_stats['generation_results']) <= 3
         
     def test_safety_mechanisms(self, code_engine):
-        \"\"\"Test safety mechanisms in code modification.\"\"\"
+        """Test safety mechanisms in code modification."""
         # Test with potentially unsafe code
-        unsafe_code = \"\"\"
+        unsafe_code = """
 def unsafe_function():
     import os
     os.system('rm -rf /')  # Dangerous command
-\"\"\"
+"""
         
         try:
             tree = ast.parse(unsafe_code)
@@ -164,7 +164,7 @@ def unsafe_function():
             pass  # Expected for some unsafe code
     
     def test_code_deployment(self, code_engine, sample_function):
-        \"\"\"Test deployment of optimized code.\"\"\"
+        """Test deployment of optimized code."""
         fragment_id = code_engine.register_function(sample_function)
         
         # Simulate optimization (manual improvement)
@@ -179,7 +179,7 @@ def unsafe_function():
             assert fragment_id.split('_')[0] in code_engine.active_functions
     
     def test_function_generation(self, code_engine):
-        \"\"\"Test generation of new functions.\"\"\"
+        """Test generation of new functions."""
         specification = "Calculate the sum of two numbers"
         example_inputs = [(1, 2), (3, 4), (5, 6)]
         example_outputs = [3, 7, 11]
@@ -200,7 +200,7 @@ def unsafe_function():
             pytest.fail("Generated code has syntax errors")
     
     def test_optimization_report(self, code_engine):
-        \"\"\"Test optimization reporting.\"\"\"
+        """Test optimization reporting."""
         report = code_engine.get_optimization_report()
         
         assert 'modification_metrics' in report
@@ -216,11 +216,11 @@ def unsafe_function():
 
 
 class TestAdaptiveArchitecture:
-    \"\"\"Test adaptive architecture management.\"\"\"
+    """Test adaptive architecture management."""
     
     @pytest.fixture
     def architecture_manager(self):
-        \"\"\"Create architecture manager for testing.\"\"\"
+        """Create architecture manager for testing."""
         return AdaptiveArchitectureManager(
             hdc_dimension=1000,
             adaptation_threshold=0.8,
@@ -228,7 +228,7 @@ class TestAdaptiveArchitecture:
         )
     
     def test_component_registration(self, architecture_manager):
-        \"\"\"Test system component registration.\"\"\"
+        """Test system component registration."""
         component = architecture_manager.register_component(
             component_id="test_processor",
             component_type=ComponentType.PROCESSOR,
@@ -244,7 +244,7 @@ class TestAdaptiveArchitecture:
         assert "test_processor" in architecture_manager.components
     
     def test_component_connections(self, architecture_manager):
-        \"\"\"Test component connection management.\"\"\"
+        """Test component connection management."""
         # Register components
         comp1 = architecture_manager.register_component(
             "comp1", ComponentType.PROCESSOR, {}, 100.0
@@ -261,7 +261,7 @@ class TestAdaptiveArchitecture:
         assert architecture_manager.current_topology.has_edge("comp1", "comp2")
         
     def test_topology_optimization(self, architecture_manager):
-        \"\"\"Test topology optimization.\"\"\"
+        """Test topology optimization."""
         # Create test topology
         for i in range(5):
             architecture_manager.register_component(
@@ -290,7 +290,7 @@ class TestAdaptiveArchitecture:
             assert optimized.number_of_nodes() == architecture_manager.current_topology.number_of_nodes()
     
     def test_resource_allocation(self, architecture_manager):
-        \"\"\"Test dynamic resource allocation.\"\"\"
+        """Test dynamic resource allocation."""
         # Register components with different types
         architecture_manager.register_component(
             "cpu_comp", ComponentType.PROCESSOR, {}, 100.0
@@ -330,7 +330,7 @@ class TestAdaptiveArchitecture:
     @patch('psutil.disk_usage')
     @patch('psutil.net_io_counters')
     def test_system_monitoring(self, mock_net, mock_disk, mock_memory, mock_cpu, architecture_manager):
-        \"\"\"Test system monitoring capabilities.\"\"\"
+        """Test system monitoring capabilities."""
         # Mock system resource calls
         mock_cpu.return_value = 50.0
         mock_memory.return_value = Mock(percent=60.0)
@@ -358,7 +358,7 @@ class TestAdaptiveArchitecture:
         assert comp_metrics['is_overloaded'] is True  # > 90%
     
     def test_adaptation_triggers(self, architecture_manager):
-        \"\"\"Test adaptation trigger detection.\"\"\"
+        """Test adaptation trigger detection."""
         # Create scenario that should trigger adaptation
         architecture_manager.register_component(
             "overloaded_comp", ComponentType.PROCESSOR, {}, 100.0
@@ -392,7 +392,7 @@ class TestAdaptiveArchitecture:
         assert adaptation_needed is False
     
     def test_load_balancing_adaptation(self, architecture_manager):
-        \"\"\"Test load balancing adaptation strategy.\"\"\"
+        """Test load balancing adaptation strategy."""
         # Create overloaded and underloaded components
         architecture_manager.register_component(
             "overloaded", ComponentType.PROCESSOR, {}, 100.0
@@ -418,7 +418,7 @@ class TestAdaptiveArchitecture:
             assert underloaded_load > 20.0  # Should be increased
     
     def test_architecture_persistence(self, architecture_manager, tmp_path):
-        \"\"\"Test saving and loading architecture configurations.\"\"\"
+        """Test saving and loading architecture configurations."""
         # Set up architecture
         architecture_manager.register_component(
             "persistent_comp", ComponentType.PROCESSOR, 
@@ -442,7 +442,7 @@ class TestAdaptiveArchitecture:
         assert loaded_comp.priority_level == 2
     
     def test_performance_tracking(self, architecture_manager):
-        \"\"\"Test performance metrics tracking.\"\"\"
+        """Test performance metrics tracking."""
         # Register components and perform operations
         architecture_manager.register_component(
             "tracked_comp", ComponentType.PROCESSOR, {}, 100.0
@@ -465,10 +465,10 @@ class TestAdaptiveArchitecture:
 
 
 class TestComponentTypes:
-    \"\"\"Test different component types and behaviors.\"\"\"
+    """Test different component types and behaviors."""
     
     def test_component_utilization(self):
-        \"\"\"Test component utilization calculations.\"\"\"
+        """Test component utilization calculations."""
         component = SystemComponent(
             component_id="test",
             component_type=ComponentType.PROCESSOR,
@@ -488,7 +488,7 @@ class TestComponentTypes:
         assert component.is_overloaded is True
     
     def test_component_adaptation_history(self):
-        \"\"\"Test component adaptation history tracking.\"\"\"
+        """Test component adaptation history tracking."""
         component = SystemComponent(
             component_id="history_test",
             component_type=ComponentType.MEMORY,
@@ -513,10 +513,10 @@ class TestComponentTypes:
 
 
 class TestIntegrationScenarios:
-    \"\"\"Integration tests for autonomous mastery capabilities.\"\"\"
+    """Integration tests for autonomous mastery capabilities."""
     
     def test_self_modifying_with_adaptive_architecture(self):
-        \"\"\"Test integration of self-modifying code with adaptive architecture.\"\"\"
+        """Test integration of self-modifying code with adaptive architecture."""
         code_engine = SelfModifyingCodeEngine(hdc_dimension=500)
         arch_manager = AdaptiveArchitectureManager(hdc_dimension=500)
         
@@ -547,7 +547,7 @@ class TestIntegrationScenarios:
         assert comp.current_load >= 0
     
     def test_end_to_end_autonomous_optimization(self):
-        \"\"\"Test end-to-end autonomous optimization scenario.\"\"\"
+        """Test end-to-end autonomous optimization scenario."""
         # Create systems
         code_engine = SelfModifyingCodeEngine(hdc_dimension=500, max_generations=3)
         arch_manager = AdaptiveArchitectureManager(hdc_dimension=500)
@@ -598,14 +598,14 @@ class TestIntegrationScenarios:
 
 @pytest.mark.performance
 class TestPerformanceBenchmarks:
-    \"\"\"Performance benchmarks for autonomous mastery.\"\"\"
+    """Performance benchmarks for autonomous mastery."""
     
     def test_code_analysis_speed(self):
-        \"\"\"Test AST analysis performance.\"\"\"
+        """Test AST analysis performance."""
         analyzer = ASTAnalyzer()
         
         # Large code sample
-        code = \"\"\"
+        code = """
 def complex_function(x, y, z):
     result = []
     for i in range(x):
@@ -618,7 +618,7 @@ def complex_function(x, y, z):
             else:
                 result.append(i * j * z)
     return result
-\"\"\"
+"""
         
         start_time = time.time()
         for _ in range(100):
@@ -630,7 +630,7 @@ def complex_function(x, y, z):
         assert avg_time < 0.01  # Should be under 10ms per analysis
     
     def test_architecture_adaptation_speed(self):
-        \"\"\"Test architecture adaptation performance.\"\"\"
+        """Test architecture adaptation performance."""
         arch_manager = AdaptiveArchitectureManager(monitoring_interval=0.01)
         
         # Create larger architecture

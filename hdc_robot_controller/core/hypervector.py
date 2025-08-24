@@ -71,6 +71,10 @@ class HyperVector:
         if not np.all(np.isin(self.data, [-1, 0, 1])):
             raise ValueError("HyperVector data must be bipolar (-1, +1) or zero")
     
+    def get_dimension(self) -> int:
+        """Get the dimension of this hypervector."""
+        return self.dimension
+    
     @classmethod
     def random(cls, dimension: int = DEFAULT_DIMENSION, seed: Optional[int] = None) -> 'HyperVector':
         """Create a random hypervector."""

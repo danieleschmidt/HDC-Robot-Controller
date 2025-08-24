@@ -140,6 +140,12 @@ class AssociativeMemory:
             raise ValueError(f"Label '{label}' not found")
         return self.memory[label]['vector']
     
+    def recall(self, label: str) -> Optional[HyperVector]:
+        """Recall vector by label (returns None if not found)."""
+        if label not in self.memory:
+            return None
+        return self.memory[label]['vector']
+    
     def best_match(self, query_vector: HyperVector) -> HyperVector:
         """Get best matching vector."""
         best_entry = self.query_best(query_vector)

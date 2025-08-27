@@ -926,7 +926,8 @@ class EnhancedHealthMonitor(HealthMonitor):
             'current_health': current_health,
             'trend_analysis': trend_analysis,
             'predictive_alerts': len(self.predictive_alerts),
-            'overall_stability': np.mean([ta['stability_score'] for ta in trend_analysis.values()]) if trend_analysis else 1.0
+            'overall_stability': (np.mean([ta['stability_score'] for ta in trend_analysis.values()]) 
+                                 if trend_analysis else 1.0)
         }
 
 

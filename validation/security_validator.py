@@ -397,7 +397,7 @@ class HDCSecurityValidator:
                     risk_level=SecurityRisk.CRITICAL,
                     component="Authentication",
                     description=f"Authentication bypass possible: {description}",
-                    payload=f"username='{username}', password='{password}'",
+                    payload=f"username='{username}', password='[REDACTED]'",
                     timestamp=time.time(),
                     remediation="Implement proper authentication validation and secure credential storage"
                 )

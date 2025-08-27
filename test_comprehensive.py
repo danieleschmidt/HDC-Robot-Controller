@@ -221,11 +221,13 @@ def test_security_framework():
         # Test access control
         access_control = AccessControlManager()
         
-        # Create test user
+        # Create test user with secure test credentials
+        import os
+        test_password = os.getenv('TEST_PASSWORD', 'SecureTestPassword123!')
         user_id = access_control.create_user(
             username="testuser",
             email="test@example.com", 
-            password="SecurePass123!",
+            password=test_password,
             security_level=SecurityLevel.RESTRICTED,
             roles=["user"]
         )
